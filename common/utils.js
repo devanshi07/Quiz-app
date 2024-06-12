@@ -90,30 +90,38 @@ export const getTimehhmma = (date) => {
 // regular fonts
 export const getRegularFont = () => {
     if (Platform.OS === 'ios') {
-        return "Poppins-Regular"
+        return "Inter-Regular"
     } else {
-        return "poppins_regular"
+        return "inter_regular"
     }
 }
 
 // semi bold fonts
 export const getSemiBoldFont = () => {
     if (Platform.OS === 'ios') {
-        return "Poppins-SemiBold"
+        return "Inter-SemiBold"
     } else {
-        return "poppins_semibold"
+        return "inter_semibold"
     }
 }
 
 // bold fonts
 export const getBoldFont = () => {
     if (Platform.OS === 'ios') {
-        return "Poppins-Bold"
+        return "Inter-Bold"
     } else {
-        return "poppins_bold"
+        return "inter_bold"
     }
 }
 
+// medium fonts
+export const getMediumFont = () => {
+    if (Platform.OS === 'ios') {
+        return "Inter-Medium"
+    } else {
+        return "inter_medium"
+    }
+}
 
 // get month name
 // export const getMonthName = (date) => {
@@ -154,104 +162,3 @@ export const getBoldFont = () => {
 //     return time_string;
 // }
 
-// // home screen header
-// export const homeScreenHeader = (navigation) => {
-//     return (
-//         <View style={externalStyles.header}>
-//             <ImageBackground style={externalStyles.headerBackground} source={require('../assets/images/home_back_image.png')} resizeMode="stretch" >
-//                 <View style={externalStyles.headerWrapper}>
-//                     <View style={externalStyles.headerTop}>
-//                         <View style={externalStyles.drawerContainer}>
-//                             <Pressable style={externalStyles.homeHamBurguerMenuContainer}
-//                                 onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-//                                 <Image source={require("../assets/images/hamburger_menu.png")} style={externalStyles.homeHamBurguerMenuIcon} />
-//                             </Pressable>
-//                             <Text style={externalStyles.drawerText}>AstroTalk</Text>
-//                         </View>
-//                         <View style={externalStyles.notificationContainer} >
-//                             <Pressable style={externalStyles.notificationButton}  >
-//                                 <Image source={require("../assets/images/bell_icon.png")}
-//                                     style={externalStyles.notificationIcon} />
-//                             </Pressable>
-//                         </View>
-//                     </View>
-
-//                     <Text style={externalStyles.drawerSubText}>{"Find a best\nastrologist for you!"}</Text>
-//                     <LinearGradient
-//                         colors={['#EDDEC6', 'white']}
-//                         style={externalStyles.headerBottom}
-//                     >
-//                         <Pressable onPress={() => { }} >
-//                             <Image source={require("../assets/images/search_icon.png")} style={externalStyles.homeSearchIcon} />
-//                         </Pressable>
-
-//                         <TextInput
-//                             // value={searchQuery}
-//                             // onChange={setSearchQuery}
-//                             placeholder="Search Astrologer, Astro pooja"
-//                             placeholderTextColor="black"
-//                             style={externalStyles.searchBox}
-//                         />
-//                     </LinearGradient>
-//                 </View>
-//             </ImageBackground>
-//         </View>
-//     );
-// }
-
-// // other screen header
-// export const commonHeader = (navigation, isSearch, isWallet, isFilter, title, isGoBack) => {
-
-//     var wallet_balance = 0;
-
-//     return (
-//         <View style={isSearch ? externalStyles.headerExceptHome : externalStyles.headerOnlyTitle}>
-//             <ImageBackground style={externalStyles.headerBackground} source={require('../assets/images/HeaderImage.png')} resizeMode={isGoBack ? "cover" : "stretch"}  >
-//                 <View style={externalStyles.headerWrapper}>
-//                     <View style={externalStyles.headerTop}>
-//                         <View style={externalStyles.drawerContainer}>
-//                             {isGoBack ?
-//                                 <Pressable onPress={() => navigation.goBack()}>
-//                                     <Image
-//                                         source={require("../assets/images/left_arrow.png")}
-//                                         style={externalStyles.headerBackIcon}
-//                                     />
-//                                 </Pressable>
-//                                 : <Pressable style={externalStyles.homeHamBurguerMenuContainer}
-//                                     onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-//                                     <Image source={require("../assets/images/hamburger_menu.png")} style={externalStyles.homeHamBurguerMenuIcon} />
-//                                 </Pressable>}
-//                             <Text style={externalStyles.drawerText}>{title}</Text>
-//                         </View>
-//                         <View style={externalStyles.filterContainer} >
-//                             {isWallet ? <Pressable style={externalStyles.walletContainer} onPress={() => { }} >
-//                                 <Text style={externalStyles.walletAmount} >₹{wallet_balance}</Text>
-//                                 <Image source={require("../assets/images/wallet.png")} style={externalStyles.walletIcon} />
-//                             </Pressable> : null}
-//                             {isFilter ? <Pressable style={externalStyles.filterButton}  >
-//                                 <Image source={require("../assets/images/filter_icon.png")} style={externalStyles.walletIcon} />
-//                             </Pressable> : null}
-//                         </View>
-//                     </View>
-
-//                     {isSearch ? <LinearGradient
-//                         colors={['#EDDEC6', 'white']}
-//                         style={externalStyles.headerBottomExceptHome}
-//                     >
-//                         <Pressable onPress={() => { }} >
-//                             <Image source={require("../assets/images/search_icon.png")} style={externalStyles.homeSearchIcon} />
-//                         </Pressable>
-
-//                         <TextInput
-//                             // value={searchQuery}
-//                             // onChange={setSearchQuery}
-//                             placeholder="Search Astrologer, Astro pooja"
-//                             placeholderTextColor="black"
-//                             style={externalStyles.searchBox}
-//                         />
-//                     </LinearGradient> : null}
-//                 </View>
-//             </ImageBackground>
-//         </View>
-//     );
-// }
