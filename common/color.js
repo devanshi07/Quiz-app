@@ -8,6 +8,8 @@ export const colors = {
     white: "#ffffff",
     black: "#000000",
     timerBackground: "#FFC9CC",
+    questionText: "#231F20",
+    optionBorder: "#828282",
 
 
     

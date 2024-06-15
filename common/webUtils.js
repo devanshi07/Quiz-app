@@ -1,10 +1,15 @@
 import { CustomConsole } from "./utils";
 
-export const BASE_URL = 'https://arogya-mandir.com/api/';
+export const BASE_URL = 'https://quiz.primaldevs.com/api/';
 
-export const CONTACT_US = BASE_URL + 'contact-us';
+export const LOGIN = BASE_URL + 'login';
+export const LOGOUT = BASE_URL + 'logout';
+
 export const SLIDER_LIST = BASE_URL + 'sliders';
 export const SLIDER_DETAILS = BASE_URL + 'slider/'; //after / add code which come from slider list
+
+export const ACTIVE_QUIZ = BASE_URL + 'quizzes/active'; 
+
 export const PMJAY_LIST = BASE_URL + 'pmjay-resource-list';
 export const PMJAY_DETAILS = BASE_URL + 'pmjay-resource/'; //after / add id from resources list
 export const SPECIALALIES = BASE_URL + 'specialities';

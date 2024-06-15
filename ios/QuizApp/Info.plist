@@ -53,6 +53,10 @@
 		<string>inter_medium.ttf</string>
 		<string>inter_regular.ttf</string>
 		<string>inter_semibold.ttf</string>
+		<string>poppins_bold.ttf</string>
+		<string>poppins_medium.ttf</string>
+		<string>poppins_regular.ttf</string>
+		<string>poppins_semibold.ttf</string>
 	</array>
 </dict>
 </plist>

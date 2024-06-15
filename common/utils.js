@@ -123,6 +123,42 @@ export const getMediumFont = () => {
     }
 }
 
+// regular fonts
+export const getPopRegularFont = () => {
+    if (Platform.OS === 'ios') {
+        return "Poppins-Regular"
+    } else {
+        return "poppins_regular"
+    }
+}
+
+// semi bold fonts
+export const getPopSemiBoldFont = () => {
+    if (Platform.OS === 'ios') {
+        return "Poppins-SemiBold"
+    } else {
+        return "poppins_semibold"
+    }
+}
+
+// bold fonts
+export const getPopBoldFont = () => {
+    if (Platform.OS === 'ios') {
+        return "Poppins-Bold"
+    } else {
+        return "poppins_bold"
+    }
+}
+
+// mediun fonts
+export const getPopMediumFont = () => {
+    if (Platform.OS === 'ios') {
+        return "Poppins-Medium"
+    } else {
+        return "poppins_medium"
+    }
+}
+
 // get month name
 // export const getMonthName = (date) => {
 //     // date.toLocaleString('en-US', { month: 'short' }); // {month:'long'}

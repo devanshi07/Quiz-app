@@ -22,6 +22,9 @@ import images from './assets/images';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colors } from './common/color';
 import LoginScreen from './screens/LoginScreen';
+import HomeScreen from './screens/HomeScreen';
+import QuizScreen from './screens/QuizScreen';
+import { FeedbackFormScreen } from './screens/FeedbackFormScreen';
 
 // splash screen 
 function SplashScreen() {
@@ -63,9 +66,12 @@ function App() {
           screenOptions={{
             headerShown: false
           }}
-          initialRouteName='LoginScreen'>
+          initialRouteName='FeedbackFormScreen'>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="QuizScreen" component={QuizScreen} />
+          <Stack.Screen name="FeedbackFormScreen" component={FeedbackFormScreen} />
           
         </Stack.Navigator>
       </NavigationContainer>
