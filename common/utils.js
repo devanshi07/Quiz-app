@@ -28,8 +28,17 @@ export const progressView = (isProgressVisible) => {
     );
 }
 
-
-
+// custom loading view
+export const coloredProgressView = (isProgressVisible) => {
+    return (
+        <View style={[externalStyles.loadingMainView, { backgroundColor: colors.themeGreenColor }]}>
+            <View style={externalStyles.coloredLoadingSubView}>
+                <Text style={externalStyles.coloredLoadingText}>Loading</Text>
+                <ActivityIndicator size="large" color={colors.white} />
+            </View>
+        </View>
+    );
+}
 
 // custom console
 export const CustomConsole = (visible) => {

@@ -36,3 +36,5 @@ export const PHONE = "user_phone";
 export const AVATAR = "avatar";
 export const ROLE = "role";
 export const FCM_TOKEN = "fcm_token";
+export const DESIGNATION = "designation";
+export const DESIGNATION_ID = "designation_id";

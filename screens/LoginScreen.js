@@ -1,20 +1,19 @@
 import { useNavigation } from "@react-navigation/native";
-import { Image, ImageBackground, Pressable, Text, View } from "react-native";
+import { Image, ImageBackground, Pressable, Text, View, TextInput } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
-import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay } from "../common/utils";
 import { LOGIN } from "../common/webUtils";
 import { useState } from "react";
-import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, saveSession } from "../common/LocalStorage";
+import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, saveSession } from "../common/LocalStorage";
 import { APP_NAME } from "../common/string";
 
 export default function LoginScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
-    const [unique_id, setUniqueId] = useState("");
-    const [password, setPassword] = useState("");
+    const [unique_id, setUniqueId] = useState("qAmYuG");
+    const [password, setPassword] = useState("12345");
     const [show_password, setShowPassword] = useState("");
     const [fcm_token, setFcmToken] = useState("");
 
@@ -58,11 +57,13 @@ export default function LoginScreen({ navigation }) {
                             saveSession(AVATAR, json.data.avatar);
                             saveSession(ROLE, json.data.role);
                             saveSession(FCM_TOKEN, json.data.fcm_token);
+                            saveSession(DESIGNATION, json.data.designation);
+                            saveSession(DESIGNATION_ID, json.data.designation_id.toString());
                             navigation.navigate("HomeScreen");
                             navigation.reset({
                                 index: 0,
                                 routes: [{ name: 'HomeScreen' }]
-                            })
+                            });
                             setLoading(false);
 
                         }
@@ -93,7 +94,7 @@ export default function LoginScreen({ navigation }) {
                 <View style={externalStyles.login_formview}>
                     {/* unique id */}
                     <TextInput
-                        style={externalStyles.query_formTextinput}
+                        style={externalStyles.login_formTextinput}
                         value={unique_id}
                         onChangeText={txt => { setUniqueId(txt); }}
                         placeholderTextColor={colors.black}
@@ -107,7 +108,7 @@ export default function LoginScreen({ navigation }) {
 
                     {/* password */}
                     <TextInput
-                        style={externalStyles.query_formTextinput}
+                        style={externalStyles.login_formTextinput}
                         value={password}
                         onChangeText={txt => { setPassword(txt); }}
                         placeholderTextColor={colors.black}

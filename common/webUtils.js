@@ -9,6 +9,11 @@ export const SLIDER_LIST = BASE_URL + 'sliders';
 export const SLIDER_DETAILS = BASE_URL + 'slider/'; //after / add code which come from slider list
 
 export const ACTIVE_QUIZ = BASE_URL + 'quizzes/active'; 
+export const QUIZ_DETAILS = BASE_URL + 'quiz/details'; 
+
+export const FEEDBACK = BASE_URL + 'feedback'; 
+
+export const GET_PROFILE = BASE_URL + 'profile'; 
 
 export const PMJAY_LIST = BASE_URL + 'pmjay-resource-list';
 export const PMJAY_DETAILS = BASE_URL + 'pmjay-resource/'; //after / add id from resources list

@@ -9,5 +9,6 @@ const images = {
     login_background: require('./login_background.png'),
     success_img: require('./success_img.png'),
     timer_icon: require('./timer_icon.png'),
+    dummy_user: require('./dummy_user.png'),
 };
 export default images;

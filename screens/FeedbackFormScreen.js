@@ -5,9 +5,10 @@ import { colors } from '../common/color';
 import { CustomConsole, alertDialogDisplay, getBoldFont, getPopMediumFont, progressView, validateEmail } from '../common/utils';
 import { useIsFocused } from '@react-navigation/native';
 import { APP_NAME } from '../common/string';
-import { CONTACT_US } from '../common/webUtils';
 import images from '../assets/images';
 import { SF, SH, SW } from '../common/dimensions';
+import { FEEDBACK } from '../common/webUtils';
+import { TOKEN, getSession } from '../common/LocalStorage';
 
 export function FeedbackFormScreen({ navigation, route }) {
 
@@ -25,17 +26,9 @@ export function FeedbackFormScreen({ navigation, route }) {
     // add query api call
     async function onSubmit() {
         try {
-            // if (title.trim().length == 0) {
-            //     alertDialogDisplay(APP_NAME, "Please enter title");
-            // }
+
             if (name.trim().length == 0) {
                 alertDialogDisplay(APP_NAME, "Please enter name");
-            }
-            // else if (email.trim().length == 0) {
-            //     alertDialogDisplay(APP_NAME, "Please enter email");
-            // }
-            else if (email != "" && !validateEmail(email)) {
-                alertDialogDisplay(APP_NAME, "Please enter proper email");
             }
             else if (phoneNo.trim().length == 0) {
                 Alert.alert(APP_NAME, "Enter Mobile Number");
@@ -43,12 +36,21 @@ export function FeedbackFormScreen({ navigation, route }) {
             else if (!onlyDigitReg.test(phoneNo)) {
                 Alert.alert(APP_NAME, "Mobile Number should be only digits");
             }
+            else if (email != "" && !validateEmail(email)) {
+                alertDialogDisplay(APP_NAME, "Please enter proper email");
+            }
             else if (query.trim().length == 0) {
                 alertDialogDisplay(APP_NAME, "Please enter query");
             }
             else {
                 // alertDialogDisplay(APP_NAME, "success");
                 setLoading(true);
+
+                const token = await getSession(TOKEN);
+
+                const myHeaders = new Headers();
+                myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
                 const formdata = new FormData();
                 formdata.append("name", name);
                 if (email !== "") {
@@ -60,12 +62,13 @@ export function FeedbackFormScreen({ navigation, route }) {
                 const requestOptions = {
                     method: "POST",
                     body: formdata,
-                    redirect: "follow"
+                    redirect: "follow",
+                    headers: myHeaders,
                 };
 
                 CustomConsole(formdata);
 
-                fetch(CONTACT_US, requestOptions)
+                fetch(FEEDBACK, requestOptions)
                     .then((response) => response.json())
                     .then((json) => {
                         CustomConsole(json);
@@ -114,8 +117,6 @@ export function FeedbackFormScreen({ navigation, route }) {
 
                     <View style={externalStyles.query_mainview}>
 
-
-
                         {/* query form */}
                         <View style={externalStyles.query_formView}>
 
@@ -131,65 +132,69 @@ export function FeedbackFormScreen({ navigation, route }) {
                                     backgroundColor: colors.themeColor,
                                     borderRadius: 360,
                                     top: -105,
-                                    alignItems:"center",
-                                    justifyContent:"flex-end"
+                                    alignItems: "center",
+                                    justifyContent: "flex-end"
                                 }}>
-                                <View style={[{
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }, { width: 130, height: 130, borderRadius: 360, backgroundColor: colors.white, zIndex: 1 }]}>
-                                    <Text style={{ color: colors.themeColor, fontFamily: getPopMediumFont(), fontSize: SF(23), textAlign: "center" }}>01</Text>
-                                </View>
+                                    <View style={[{
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }, { width: 130, height: 130, borderRadius: 360, backgroundColor: colors.white, zIndex: 1 }]}>
+                                        <Image source={images.feedback_icon} style={{ width: SH(55), height: SH(55), resizeMode: "contain" }} />
+                                    </View>
                                 </View>
                             </View>
 
-                            {/* name */}
-                            <TextInput
-                                style={externalStyles.query_formTextinput}
-                                value={name}
-                                onChangeText={txt => { setName(txt); }}
-                                placeholderTextColor={colors.black}
-                                placeholder="Full Name" />
-                            {/* end of name */}
+                            <View style={{ marginTop: -50 }}>
 
-                            {/* email */}
-                            <TextInput
-                                style={externalStyles.query_formTextinput}
-                                value={email}
-                                onChangeText={txt => { setEmail(txt) }}
-                                placeholderTextColor={colors.black}
-                                inputMode="email"
-                                keyboardType="email-address"
-                                placeholder="Enter Email" />
-                            {/* end of email */}
+                                {/* name */}
+                                <TextInput
+                                    style={externalStyles.query_formTextinput}
+                                    value={name}
+                                    onChangeText={txt => { setName(txt); }}
+                                    placeholderTextColor={colors.black}
+                                    placeholder="Name" />
+                                {/* end of name */}
 
-                            {/* name */}
-                            <TextInput
-                                style={externalStyles.query_formTextinput}
-                                value={phoneNo}
-                                onChangeText={txt => { setPhoneNo(txt); }}
-                                placeholderTextColor={colors.black}
-                                keyboardType="number-pad"
-                                inputMode="numeric"
-                                placeholder="Mobile Number" />
-                            {/* end of name */}
+                                {/* phone no */}
+                                <TextInput
+                                    style={externalStyles.query_formTextinput}
+                                    value={phoneNo}
+                                    onChangeText={txt => { setPhoneNo(txt); }}
+                                    placeholderTextColor={colors.black}
+                                    keyboardType="number-pad"
+                                    inputMode="numeric"
+                                    placeholder='Phone No' />
+                                {/* end of phone no */}
 
-                            {/* query */}
-                            <TextInput
-                                style={externalStyles.query_formTextarea}
-                                value={query}
-                                multiline={true}
-                                onChangeText={txt => { setQuery(txt) }}
-                                placeholderTextColor={colors.black}
-                                placeholder="Enter Query" />
-                            {/* end of query */}
+                                {/* email */}
+                                <TextInput
+                                    style={externalStyles.query_formTextinput}
+                                    value={email}
+                                    onChangeText={txt => { setEmail(txt) }}
+                                    placeholderTextColor={colors.black}
+                                    inputMode="email"
+                                    keyboardType="email-address"
+                                    placeholder="Email" />
+                                {/* end of email */}
 
-                            {/* submit button */}
-                            <Pressable onPress={onSubmit}
-                                style={externalStyles.query_submitbutton}>
-                                <Text style={externalStyles.query_submitbuttonText}>Submit</Text>
-                            </Pressable>
-                            {/* end of submit button */}
+                                {/* query */}
+                                <TextInput
+                                    style={externalStyles.query_formTextarea}
+                                    value={query}
+                                    multiline={true}
+                                    onChangeText={txt => { setQuery(txt) }}
+                                    placeholderTextColor={colors.black}
+                                    placeholder="Feedback" />
+                                {/* end of query */}
+
+                                {/* submit button */}
+                                <Pressable onPress={onSubmit}
+                                    style={externalStyles.query_submitbutton}>
+                                    <Text style={externalStyles.query_submitbuttonText}>Submit</Text>
+                                </Pressable>
+                                {/* end of submit button */}
+                            </View>
+
 
                             {/* <Pressable onPress={() => navigation.navigate("CommonWeb")} style={externalStyles.query_privacyView}>
                                 <Text style={externalStyles.query_privacyText}>Privacy Policy</Text>
