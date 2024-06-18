@@ -17,7 +17,6 @@ export default function HomeScreen({ navigation }) {
     useEffect(() => {
         if (focused) {
             getSliderList();
-            getActiveQuizList();
         }
     }, [focused]);
 
@@ -25,13 +24,12 @@ export default function HomeScreen({ navigation }) {
     const getSliderList = async () => {
 
         try {
-            // setLoading(true);
             const requestOptions = {
                 method: "GET",
                 redirect: "follow"
             };
 
-            CustomConsole("API: " + SLIDER_LIST);
+            setLoading(true);
             fetch(SLIDER_LIST, requestOptions)
                 .then((response) => response.json())
                 .then((json) => {
@@ -39,52 +37,17 @@ export default function HomeScreen({ navigation }) {
 
                     if (json.status == 1) {
                         // success response
-                        if (json.data.length != 0) {
-
-                            var homeData = json.data.find(element => element.code.includes('home'));
-                            if (homeData != null) {
-                                CustomConsole(homeData);
-
-                                CustomConsole("API: " + SLIDER_DETAILS + homeData.code);
-                                fetch(SLIDER_DETAILS + homeData.code, requestOptions)
-                                    .then((response1) => response1.json())
-                                    .then((json1) => {
-                                        CustomConsole(json1);
-
-                                        if (json1.status == 1) {
-                                            // success response
-                                            imageList.length = 0;
-                                            for (var i = 0; i < json1.data.slides.length; i++) {
-                                                imageList.push({
-                                                    id: i,
-                                                    image: json1.data.slides[i]
-                                                });
-                                            }
-                                            setImageList(imageList);
-                                            // setLoading(false);
-                                        }
-                                        else {
-                                            // other reponse status
-                                            setLoading(false);
-                                        }
-
-                                    })
-                                    .catch((error1) => {
-                                        setLoading(false);
-                                        CustomConsole("Slider Details Api Error: " + error1);
-                                    });
-                            }
-                        }
+                        setImageList(json.data.slides);
+                        getActiveQuizList();
                     }
                     else {
                         // other reponse status
                         setLoading(false);
                     }
-
                 })
                 .catch((error) => {
                     setLoading(false);
-                    CustomConsole("Slider list Api Error: " + error);
+                    CustomConsole("Slider List Api Error: " + error);
                 });
         } catch (error) {
             setLoading(false);
@@ -95,8 +58,6 @@ export default function HomeScreen({ navigation }) {
     // quiz list api
     const getActiveQuizList = async () => {
         try {
-            setLoading(true);
-
             const token = await getSession(TOKEN);
             const designation_id = await getSession(DESIGNATION_ID);
 
@@ -119,7 +80,6 @@ export default function HomeScreen({ navigation }) {
                 .then((response) => response.json())
                 .then((json) => {
                     CustomConsole(json);
-
                     if (json.status == 1) {
                         // success response
                         setActiveQuizList(json.quiz_list);
@@ -129,7 +89,6 @@ export default function HomeScreen({ navigation }) {
                         // other reponse status
                         setLoading(false);
                     }
-
                 })
                 .catch((error) => {
                     setLoading(false);
@@ -144,7 +103,7 @@ export default function HomeScreen({ navigation }) {
     // banner item view
     const renderImageItem = ({ item, index }) => (
         <View style={externalStyles.banner_item_view}>
-            <Image source={{ uri: item.image }} style={externalStyles.banner_item_image} />
+            <Image source={{ uri: item }} style={externalStyles.banner_item_image} />
         </View>
     );
 

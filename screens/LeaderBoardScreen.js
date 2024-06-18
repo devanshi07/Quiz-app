@@ -20,79 +20,44 @@ export default function LeaderBoardScreen({ navigation }) {
 
     useEffect(() => {
         if (focused) {
-            // getSliderList();
-            // getActiveQuizList();
+            getTopPerformersList();
         }
     }, [focused]);
 
-    // // slider list api
-    // const getSliderList = async () => {
+    // top performer list api
+    const getTopPerformersList = async () => {
 
-    //     try {
-    //         setLoading(true);
-    //         const requestOptions = {
-    //             method: "GET",
-    //             redirect: "follow"
-    //         };
+        try {
+            setLoading(true);
+            const requestOptions = {
+                method: "GET",
+                redirect: "follow"
+            };
 
-    //         fetch(SLIDER_LIST, requestOptions)
-    //             .then((response) => response.json())
-    //             .then((json) => {
-    //                 CustomConsole(json);
+            fetch(SLIDER_LIST, requestOptions)
+                .then((response) => response.json())
+                .then((json) => {
+                    CustomConsole(json);
 
-    //                 if (json.status == 1) {
-    //                     // success response
-    //                     if (json.data.length != 0) {
+                    if (json.status == 1) {
+                        // success response
+                        
+                    }
+                    else {
+                        // other reponse status
+                        setLoading(false);
+                    }
 
-    //                         var homeData = json.data.find(element => element.code.includes('home'));
-    //                         if (homeData != null) {
-    //                             CustomConsole(homeData);
-
-    //                             fetch(SLIDER_DETAILS + homeData.code, requestOptions)
-    //                                 .then((response1) => response1.json())
-    //                                 .then((json1) => {
-    //                                     CustomConsole(json1);
-
-    //                                     if (json1.status == 1) {
-    //                                         // success response
-    //                                         imageList.length = 0;
-    //                                         for (var i = 0; i < json1.data.slides.length; i++) {
-    //                                             imageList.push({
-    //                                                 id: i,
-    //                                                 image: json1.data.slides[i]
-    //                                             });
-    //                                         }
-    //                                         setImageList(imageList);
-    //                                         setLoading(false);
-    //                                     }
-    //                                     else {
-    //                                         // other reponse status
-    //                                         setLoading(false);
-    //                                     }
-
-    //                                 })
-    //                                 .catch((error1) => {
-    //                                     setLoading(false);
-    //                                     CustomConsole("Slider Details Api Error: " + error1);
-    //                                 });
-    //                         }
-    //                     }
-    //                 }
-    //                 else {
-    //                     // other reponse status
-    //                     setLoading(false);
-    //                 }
-
-    //             })
-    //             .catch((error) => {
-    //                 setLoading(false);
-    //                 CustomConsole("Slider list Api Error: " + error);
-    //             });
-    //     } catch (error) {
-    //         setLoading(false);
-    //         CustomConsole("Slider List Api Exception: " + error);
-    //     }
-    // }
+                })
+                .catch((error) => {
+                    setLoading(false);
+                    CustomConsole("Top performer list Api Error: " + error);
+                });
+        } catch (error) {
+            setLoading(false);
+            CustomConsole("Top performer List Api Exception: " + error);
+        }
+    }
 
 
 

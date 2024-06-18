@@ -202,16 +202,9 @@ export function FeedbackFormScreen({ navigation, route }) {
 
                         </View>
                         {/* end of query form */}
-
                     </View>
-
-
-
                 </ScrollView>}
             {/* end of loader view */}
-
-
-
         </View>
     );
 }

@@ -1,11 +1,11 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { Alert, Button, Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Button, Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, coloredProgressView, getMediumFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, LOGIN, QUIZ_DETAILS, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
+import { ACTIVE_QUIZ, LOGIN, QUIZ_DETAILS, QUIZ_SUBMIT, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
@@ -13,23 +13,6 @@ import { APP_NAME } from "../common/string";
 import * as Progress from 'react-native-progress';
 
 export default function QuizScreen({ navigation, route }) {
-
-    const quizData = [
-        {
-            question: "What is the capital of France?",
-            options: ["Paris", "Madrid", "Rome", "Berlin"],
-            correctAnswer: "Paris",
-            explanation: "Paris is the capital of France."
-        },
-        {
-            question: "Which planet is known as the Red Planet?",
-            options: ["Mars", "Jupiter", "Mercury", "Venus"],
-            correctAnswer: "Mars",
-            explanation: "Mars is known as the Red Planet due to its reddish appearance."
-        },
-        // Add more questions as needed
-    ];
-
 
     const paramItem = route.params.paramItem
 
@@ -49,6 +32,8 @@ export default function QuizScreen({ navigation, route }) {
     const [selectedOption, setSelectedOption] = useState('');
     const [timeLeft, setTimeLeft] = useState(0); // 60 seconds for quiz
     const [progress, setProgress] = useState(0);
+    const [answerArr, setAnswerArr] = useState([]);
+    const [isAnswered, setIsAnswered] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -61,12 +46,13 @@ export default function QuizScreen({ navigation, route }) {
                         {
                             text: "OK",
                             onPress: () => {
-                                navigation.navigate('QuizResultScreen', {
-                                    paramTotalQuestions: totalQuestions,
-                                    paramTotalScore: 100,
-                                    paramAttemptQuestions: attemptQuestion,
-                                    paramScore: score
-                                });
+                                // navigation.navigate('QuizResultScreen', {
+                                //     paramTotalQuestions: totalQuestions,
+                                //     paramTotalScore: 100,
+                                //     paramAttemptQuestions: attemptQuestion,
+                                //     paramScore: score
+                                // });
+                                submitQuiz();
                             },
                             style: "cancel"
                         },
@@ -74,7 +60,7 @@ export default function QuizScreen({ navigation, route }) {
                     ]
                 );
             }
-        }, 1000 * 60);
+        }, 1000); // 15 min = 1000 * 15
         return () => clearTimeout(timer);
     }, [timeLeft]);
 
@@ -86,7 +72,6 @@ export default function QuizScreen({ navigation, route }) {
 
     // quiz list api
     const getActiveQuizList = async () => {
-
         try {
             setLoading(true);
 
@@ -137,25 +122,121 @@ export default function QuizScreen({ navigation, route }) {
         }
     }
 
-    // option pressed method
-    const handleOptionPress = (selectedOption) => {
-        CustomConsole(selectedOption);
-        setSelectedOption(selectedOption.option_id);
-        if (selectedOption.option_text === questionList[currentQuestion].question_text) {
-            setScore(score + 1);
-            setCorrectAns('1');
-            setAttemptQuestion(attemptQuestion + 1);
-            setProgress(((currentQuestion + 1) * 100) / totalQuestions);
-        } else {
-            setCorrectAns('0');
-            setShowExplanation(true);
-            setAttemptQuestion(attemptQuestion + 1);
-            setProgress(((currentQuestion + 1) * 100) / totalQuestions);
+    // submit quiz
+    const submitQuiz = async () => {
+        try {
+            setLoading(true);
+            const token = await getSession(TOKEN);
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
+            const raw = JSON.stringify({
+                "quiz_id": paramItem?.quiz_id,
+                "start_time": "01:04:00",
+                "end_time": "01:05:00",
+                "answers": answerArr
+            });
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+                redirect: "follow"
+            };
+
+            CustomConsole("API: " + QUIZ_SUBMIT);
+            CustomConsole(raw);
+            fetch(QUIZ_SUBMIT, requestOptions)
+                .then((response) => response.json())
+                .then((json) => {
+                    CustomConsole(json);
+                    if (json.status == 1) {
+                        navigation.navigate('QuizResultScreen', {
+                            paramTotalQuestions: totalQuestions,
+                            paramTotalScore: 100,
+                            paramAttemptQuestions: attemptQuestion,
+                            paramScore: score
+                        });
+                    } else {
+                        setLoading(false);
+                    }
+                })
+                .catch((error1) => {
+                    setLoading(false);
+                    CustomConsole("Submit quiz Api Error: " + error1);
+                });
+
+        } catch (error) {
+            setLoading(false);
+            CustomConsole("Submit Quiz Api Exception: " + error);
         }
+    }
+
+    // option pressed method
+    // const handleOptionPress = (selectedOption, question_id) => {
+    //     CustomConsole(selectedOption);
+    //     setSelectedOption(selectedOption.option_id);
+    //     if (selectedOption.is_currect === 1) {
+    //         setScore(score + 1);
+    //         setCorrectAns('1');
+    //         setAttemptQuestion(attemptQuestion + 1);
+    //         setProgress(((currentQuestion + 1) * 100) / totalQuestions);
+    //         answerArr.push({
+    //             "question_id": question_id,
+    //             "answer_id": selectedOption.option_id
+    //         });
+    //         setShowExplanation(false);
+
+    //     } else {
+    //         setCorrectAns('0');
+    //         setShowExplanation(true);
+    //         setAttemptQuestion(attemptQuestion + 1);
+    //         setProgress(((currentQuestion + 1) * 100) / totalQuestions);
+    //         answerArr.push({
+    //             "question_id": question_id,
+    //             "answer_id": selectedOption.option_id
+    //         });
+    //     }
+
+    //     handleNext();
+    // };
+
+    const handleOptionPress = (index, selectedOption, question_id) => {
+        if (!isAnswered) {
+            setSelectedOption(index);
+            setIsAnswered(true);
+            setAttemptQuestion(attemptQuestion + 1);
+            setProgress(((currentQuestion + 1) * 100) / totalQuestions);
+            answerArr.push({
+                "question_id": question_id,
+                "answer_id": selectedOption.option_id
+            });
+        }
+    };
+
+    const getOptionStyle = (index) => {
+        if (!isAnswered) return styles.option;
+        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 0) return styles.wrongOption;
+        if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOption;
+        return styles.option;
+    };
+
+    const getOptionTextStyle = (index) => {
+        if (!isAnswered) return styles.optionText;
+        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 0) return styles.wrongOptionText;
+        if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOptionText;
+        return styles.optionText;
+    };
+
+    const shouldShowExplanation = () => {
+        if (!isAnswered) return false;
+        return questionList[currentQuestion].question_options[selectedOption].is_currect === 0;
     };
 
     // handle next button press
     const handleNext = () => {
+        setIsAnswered(false);
         if (currentQuestion < questionList.length - 1) {
             setCorrectAns('');
             setSelectedOption('');
@@ -164,23 +245,26 @@ export default function QuizScreen({ navigation, route }) {
         } else {
             // Quiz ends
             // Navigate to result screen or show result
-            Alert.alert(APP_NAME, `Quiz completed.`,
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            navigation.navigate('QuizResultScreen', {
-                                paramTotalQuestions: totalQuestions,
-                                paramTotalScore: 100,
-                                paramAttemptQuestions: attemptQuestion,
-                                paramScore: score
-                            });
-                        },
-                        style: "cancel"
-                    },
+            CustomConsole(answerArr);
+            submitQuiz();
+            // Alert.alert(APP_NAME, `Quiz completed.`,
+            //     [
+            //         {
+            //             text: "OK",
+            //             onPress: () => {
+            //                 navigation.navigate('QuizResultScreen', {
+            //                     paramTotalQuestions: totalQuestions,
+            //                     paramTotalScore: 100,
+            //                     paramAttemptQuestions: attemptQuestion,
+            //                     paramScore: score
+            //                 });
+            //             },
+            //             style: "cancel"
+            //         },
 
-                ]
-            );
+            //     ]
+            // );
+
         }
     };
 
@@ -200,7 +284,7 @@ export default function QuizScreen({ navigation, route }) {
                 <>
                     <ScrollView>
                         <View style={{ marginHorizontal: SW(37) }}>
-                          
+
                             {/* progress bar view */}
                             <View style={{ marginTop: SH(31), marginBottom: SH(27) }}>
                                 <Progress.Bar progress={progress / 100} width={Dimensions.get('window').width - 64} color={colors.themeColor} unfilledColor={"#D9D9D9"} borderWidth={0} height={11} />
@@ -259,20 +343,26 @@ export default function QuizScreen({ navigation, route }) {
                                 {/* option view */}
                                 <View style={{ marginTop: SH(39) }}>
 
-                                    {questionList[currentQuestion]?.question_options?.map(option => (
-                                        <Pressable onPress={() => handleOptionPress(option)}
-                                            style={{
-                                                backgroundColor: (correctAns == '1' && selectedOption == option.option_id) ? colors.themeYellowColor : (correctAns == '0' && selectedOption == option.option_id) ? colors.themeColor : colors.white,
-                                                borderWidth: selectedOption == option.option_id ? 0 : 1, borderColor: colors.optionBorder, borderRadius: 11, paddingVertical: 15, paddingHorizontal: 21, marginBottom: SH(22)
-                                            }}>
-                                            <Text style={{ color: selectedOption == option.option_id ? colors.white : colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{option.option_text}</Text>
+                                    {questionList[currentQuestion]?.question_options?.map((option, index) => (
+                                        // <Pressable
+                                        //  key={option.option_id} onPress={() => handleOptionPress(option)}
+                                        //     style={{
+                                        //         backgroundColor: (correctAns == '1' && selectedOption == option.option_id) ? colors.themeYellowColor : (correctAns == '0' && selectedOption == option.option_id) ? colors.themeColor : colors.white,
+                                        //         borderWidth: selectedOption == option.option_id ? 0 : 1, borderColor: colors.optionBorder, borderRadius: 11, paddingVertical: 15, paddingHorizontal: 21, marginBottom: SH(22)
+                                        //     }}>
+                                        <Pressable
+                                            key={option.option_id}
+                                            style={getOptionStyle(index)}
+                                            onPress={() => handleOptionPress(index, option, questionList[currentQuestion]?.question_id)}
+                                            disabled={isAnswered}>
+                                            <Text style={getOptionTextStyle(index)}>{option.option_text}</Text>
                                         </Pressable>
                                     ))}
 
                                 </View>
                                 {/* end of option view */}
 
-                                {showExplanation && (
+                                {shouldShowExplanation() && (
                                     <View style={{ borderWidth: 1, borderColor: colors.themeColor, borderRadius: 11, paddingVertical: 15, paddingHorizontal: 21, }}>
                                         <Text style={{ color: colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{`Explanation: ${questionList[currentQuestion]?.answer_explained}`}</Text>
                                     </View>
@@ -294,3 +384,64 @@ export default function QuizScreen({ navigation, route }) {
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+    },
+    question: {
+        fontSize: 24,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    option: {
+        width: '100%',
+        padding: 15,
+        marginVertical: 5,
+        backgroundColor: colors.white,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "#828282"
+    },
+    correctOption: {
+        width: '100%',
+        padding: 15,
+        marginVertical: 5,
+        backgroundColor: 'green',
+        borderRadius: 5,
+    },
+    wrongOption: {
+        width: '100%',
+        padding: 15,
+        marginVertical: 5,
+        backgroundColor: 'red',
+        borderRadius: 5,
+    },
+    optionText: {
+        textAlign: 'left',
+        fontSize: SF(15),
+        color: "#000",
+        fontFamily: getPopMediumFont(),
+    },
+    explanation: {
+        marginTop: 20,
+        fontSize: 16,
+        textAlign: 'center',
+    },
+    correctOptionText: {
+        textAlign: 'left',
+        fontSize: SF(15),
+        color: '#fff',
+        fontFamily: getPopMediumFont(),
+    },
+    wrongOptionText: {
+        textAlign: 'left',
+        fontSize: SF(15),
+        color: '#fff',
+        fontFamily: getPopMediumFont(),
+    },
+});
+

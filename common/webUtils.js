@@ -5,23 +5,19 @@ export const BASE_URL = 'https://quiz.primaldevs.com/api/';
 export const LOGIN = BASE_URL + 'login';
 export const LOGOUT = BASE_URL + 'logout';
 
-export const SLIDER_LIST = BASE_URL + 'sliders';
-export const SLIDER_DETAILS = BASE_URL + 'slider/'; //after / add code which come from slider list
+export const SLIDER_LIST = BASE_URL + 'slider/home'; //after / add code which come from slider list
 
 export const ACTIVE_QUIZ = BASE_URL + 'quizzes/active'; 
 export const QUIZ_DETAILS = BASE_URL + 'quiz/details'; 
+export const QUIZ_SUBMIT = BASE_URL + 'quiz/submit'; 
+export const PERSONAL_RESULT = BASE_URL + 'quiz/personal-result'; 
+export const TOP_WINNERS = BASE_URL + 'quiz/top-winners?designation_id='; 
 
 export const FEEDBACK = BASE_URL + 'feedback'; 
 
 export const GET_PROFILE = BASE_URL + 'profile'; 
+export const PROFILE_EDIT = BASE_URL + 'profile/edit'; 
 
-export const PMJAY_LIST = BASE_URL + 'pmjay-resource-list';
-export const PMJAY_DETAILS = BASE_URL + 'pmjay-resource/'; //after / add id from resources list
-export const SPECIALALIES = BASE_URL + 'specialities';
-export const HOSPITAL_DETAILS = BASE_URL + 'hospital/'; //after / add id from hospital list
-export const HOSPITAL_LIST = BASE_URL + 'hospitals';
-export const TOTAL_DATA = BASE_URL + 'front-counts';
-export const WORK_PLACE_TYPE = BASE_URL + 'work-place-types';
 
 // Common api call for POST method
 export const postAPICall = async (api, formdata) => {
