@@ -10,5 +10,11 @@ const images = {
     success_img: require('./success_img.png'),
     timer_icon: require('./timer_icon.png'),
     dummy_user: require('./dummy_user.png'),
+    drawer_menu: require('./drawer_menu.png'),
+    drawer_user: require('./drawer_user.png'),
+    drawer_quiz: require('./drawer_quiz.png'),
+    drawer_privacy: require('./drawer_privacy.png'),
+    drawer_logout: require('./drawer_logout.png'),
+    drawer_leaderboard: require('./drawer_leaderboard.png'),
 };
 export default images;

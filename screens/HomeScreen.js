@@ -1,5 +1,5 @@
 import { useIsFocused, } from "@react-navigation/native";
-import { FlatList, Image, Pressable, Text, View } from "react-native";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import { CustomConsole, progressView } from "../common/utils";
 import { ACTIVE_QUIZ, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
@@ -142,10 +142,11 @@ export default function HomeScreen({ navigation }) {
                         </View>
                     </View>
                     {/* end of banner view */}
-
+    
                     {/* quiz list view */}
                     <Text style={externalStyles.home_active_quiz_text}>Active Quiz</Text>
-                    <FlatList data={activeQuizList}
+                    <FlatList
+                     data={activeQuizList}
                         style={externalStyles.home_active_quiz_list}
                         ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
                         renderItem={renderQuizItem}

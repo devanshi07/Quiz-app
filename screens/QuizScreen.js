@@ -34,35 +34,70 @@ export default function QuizScreen({ navigation, route }) {
     const [progress, setProgress] = useState(0);
     const [answerArr, setAnswerArr] = useState([]);
     const [isAnswered, setIsAnswered] = useState(false);
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [timerRunning, setTimerRunning] = useState(false);
+
+    // Function to format time in hh:mm:ss
+    const formatTime = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (timeLeft > 0) {
-                setTimeLeft(timeLeft - 1);
-            } else {
-                // handleNext();
-                Alert.alert(APP_NAME, `Quiz completed.`,
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                // navigation.navigate('QuizResultScreen', {
-                                //     paramTotalQuestions: totalQuestions,
-                                //     paramTotalScore: 100,
-                                //     paramAttemptQuestions: attemptQuestion,
-                                //     paramScore: score
-                                // });
-                                submitQuiz();
-                            },
-                            style: "cancel"
-                        },
+        let timer
+        if (timerRunning) {
+            if (timerRunning) {
+                timer = setTimeout(() => {
+                    if (timeLeft > 0) {
+                        setTimeLeft(timeLeft - 1);
+                    } else {
+                        Alert.alert(APP_NAME, `Quiz completed.`,
+                            [
+                                {
+                                    text: "OK",
+                                    onPress: () => {
+                                        setTimerRunning(false);
+                                        submitQuiz();
+                                    },
+                                    style: "cancel"
+                                },
 
-                    ]
-                );
+                            ]
+                        );
+                    }
+                }, 1000);
             }
-        }, 1000); // 15 min = 1000 * 15
+        }
+        // const timer = setTimeout(() => {
+        //     if (timeLeft > 0) {
+        //         setTimeLeft(timeLeft - 1);
+        //     } else {
+        //         // handleNext();
+        //         Alert.alert(APP_NAME, `Quiz completed.`,
+        //             [
+        //                 {
+        //                     text: "OK",
+        //                     onPress: () => {
+        //                         // navigation.navigate('QuizResultScreen', {
+        //                         //     paramTotalQuestions: totalQuestions,
+        //                         //     paramTotalScore: 100,
+        //                         //     paramAttemptQuestions: attemptQuestion,
+        //                         //     paramScore: score
+        //                         // });
+        //                         submitQuiz();
+        //                     },
+        //                     style: "cancel"
+        //                 },
+
+        //             ]
+        //         );
+        //     }
+        // }, 1000); // 15 min = 1000 * 15
         return () => clearTimeout(timer);
-    }, [timeLeft]);
+    }, [timeLeft, timerRunning]);
 
     useEffect(() => {
         if (focused) {
@@ -102,8 +137,10 @@ export default function QuizScreen({ navigation, route }) {
                         // success response
                         setActiveQuizList(json.quiz_list);
                         setQuestionList(json.quiz_details.questions);
-                        setTimeLeft(json.quiz_details.total_time);
+                        setTimeLeft(json.quiz_details.total_time * 60);
+                        setStartTime(formatTime(json.quiz_details.total_time * 60));
                         setTotalQuestion(json.quiz_details.total_questions);
+                        setTimerRunning(true);
                         setLoading(false);
                     }
                     else {
@@ -125,7 +162,6 @@ export default function QuizScreen({ navigation, route }) {
     // submit quiz
     const submitQuiz = async () => {
         try {
-            setLoading(true);
             const token = await getSession(TOKEN);
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -133,8 +169,8 @@ export default function QuizScreen({ navigation, route }) {
 
             const raw = JSON.stringify({
                 "quiz_id": paramItem?.quiz_id,
-                "start_time": "01:04:00",
-                "end_time": "01:05:00",
+                "start_time": startTime,
+                "end_time": formatTime(timeLeft),
                 "answers": answerArr
             });
 
@@ -147,6 +183,7 @@ export default function QuizScreen({ navigation, route }) {
 
             CustomConsole("API: " + QUIZ_SUBMIT);
             CustomConsole(raw);
+            setLoading(true);
             fetch(QUIZ_SUBMIT, requestOptions)
                 .then((response) => response.json())
                 .then((json) => {
@@ -218,20 +255,36 @@ export default function QuizScreen({ navigation, route }) {
     const getOptionStyle = (index) => {
         if (!isAnswered) return styles.option;
         if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 0) return styles.wrongOption;
-        if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOption;
+        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOption;
+        // if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOption;
         return styles.option;
     };
 
     const getOptionTextStyle = (index) => {
         if (!isAnswered) return styles.optionText;
         if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 0) return styles.wrongOptionText;
-        if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOptionText;
+        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOptionText;
+        // if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOptionText;
         return styles.optionText;
     };
 
     const shouldShowExplanation = () => {
         if (!isAnswered) return false;
         return questionList[currentQuestion].question_options[selectedOption].is_currect === 0;
+    };
+
+    const getExplanation = () => {
+        if (!isAnswered) return null;
+        if (questionList[currentQuestion].question_options[selectedOption].is_currect === 0) {
+            const correctOption = questionList[currentQuestion].question_options.find(option => option.is_currect === 1);
+            return (
+                <View style={styles.explanationContainer}>
+                    <Text style={styles.correctAnswer}>Correct answer: {correctOption.option_text}</Text>
+                    <Text style={styles.explanation}>Explanation: {questionList[currentQuestion].answer_explained}</Text>
+                </View>
+            );
+        }
+        return null;
     };
 
     // handle next button press
@@ -245,6 +298,7 @@ export default function QuizScreen({ navigation, route }) {
         } else {
             // Quiz ends
             // Navigate to result screen or show result
+            setTimerRunning(false);
             CustomConsole(answerArr);
             submitQuiz();
             // Alert.alert(APP_NAME, `Quiz completed.`,
@@ -283,7 +337,7 @@ export default function QuizScreen({ navigation, route }) {
             {loading ? coloredProgressView(loading) :
                 <>
                     <ScrollView>
-                        <View style={{ marginHorizontal: SW(37) }}>
+                        <View style={{ marginHorizontal: SW(37), marginBottom: SH(20) }}>
 
                             {/* progress bar view */}
                             <View style={{ marginTop: SH(31), marginBottom: SH(27) }}>
@@ -296,7 +350,7 @@ export default function QuizScreen({ navigation, route }) {
                                 <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14) }}>Timer</Text>
                                 <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>
                                     <Image source={images.timer_icon} style={{ height: SH(20), width: SH(20), resizeMode: "contain" }} />
-                                    <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{timeLeft} min</Text>
+                                    <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{formatTime(timeLeft)}</Text>
                                 </View>
                             </View>
                             {/* end of timer view */}
@@ -362,11 +416,7 @@ export default function QuizScreen({ navigation, route }) {
                                 </View>
                                 {/* end of option view */}
 
-                                {shouldShowExplanation() && (
-                                    <View style={{ borderWidth: 1, borderColor: colors.themeColor, borderRadius: 11, paddingVertical: 15, paddingHorizontal: 21, }}>
-                                        <Text style={{ color: colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{`Explanation: ${questionList[currentQuestion]?.answer_explained}`}</Text>
-                                    </View>
-                                )}
+                                {getExplanation()}
 
                                 {/* next button */}
                                 <Pressable onPress={handleNext}
@@ -426,11 +476,6 @@ const styles = StyleSheet.create({
         color: "#000",
         fontFamily: getPopMediumFont(),
     },
-    explanation: {
-        marginTop: 20,
-        fontSize: 16,
-        textAlign: 'center',
-    },
     correctOptionText: {
         textAlign: 'left',
         fontSize: SF(15),
@@ -442,6 +487,26 @@ const styles = StyleSheet.create({
         fontSize: SF(15),
         color: '#fff',
         fontFamily: getPopMediumFont(),
+    },
+    explanationContainer: {
+        marginTop: 20,
+        // alignItems: 'center',
+        borderWidth: 1,
+        borderColor: "#D9D9D9",
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 10
+    },
+    correctAnswer: {
+        fontSize: SF(20),
+        color: 'green',
+        textAlign: 'left',
+        marginBottom: 10,
+    },
+    explanation: {
+        fontSize: SF(18),
+        textAlign: 'left',
+        color: '#828282', // red color for explanation
     },
 });
 

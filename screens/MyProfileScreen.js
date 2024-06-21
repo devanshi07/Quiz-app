@@ -28,7 +28,7 @@ export default function MyProfileScreen({ navigation }) {
         }
     }, [focused]);
 
-    // slider list api
+    // profile api
     const getProfile = async () => {
 
         try {

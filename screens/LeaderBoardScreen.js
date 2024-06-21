@@ -1,22 +1,20 @@
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { DrawerActions, useIsFocused, useNavigation } from "@react-navigation/native";
 import { Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont } from "../common/utils";
-import { ACTIVE_QUIZ, LOGIN, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
+import { ACTIVE_QUIZ, LOGIN, SLIDER_DETAILS, SLIDER_LIST, TOP_WINNERS } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
-import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
+import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
 
 export default function LeaderBoardScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
-    const [imageList, setImageList] = useState([]);
-    const [activeQuizList, setActiveQuizList] = useState("");
+    const [performerList, setPerformerList] = useState([]);
     const focused = useIsFocused();
-    let Flatlistref = useRef(null);
 
     useEffect(() => {
         if (focused) {
@@ -29,19 +27,26 @@ export default function LeaderBoardScreen({ navigation }) {
 
         try {
             setLoading(true);
+            const token = await getSession(TOKEN);
+            const designation_id = await getSession(DESIGNATION_ID);
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
             const requestOptions = {
                 method: "GET",
+                headers: myHeaders,
                 redirect: "follow"
             };
 
-            fetch(SLIDER_LIST, requestOptions)
+            fetch(TOP_WINNERS + designation_id, requestOptions)
                 .then((response) => response.json())
                 .then((json) => {
                     CustomConsole(json);
 
                     if (json.status == 1) {
                         // success response
-                        
+                        setPerformerList(json.data);
+                        setLoading(false);
                     }
                     else {
                         // other reponse status
@@ -59,38 +64,13 @@ export default function LeaderBoardScreen({ navigation }) {
         }
     }
 
-
-
-    const renderImageItem = ({ item, index }) => (
-        <View style={{ backgroundColor: colors.themeColor, borderRadius: 360, width: Dimensions.get('window').width + 10, height: Dimensions.get('window').width + 10, alignItems: "center", }}>
-            <View style={{ backgroundColor: colors.white, borderRadius: 360, width: Dimensions.get('window').width - 15, height: Dimensions.get('window').width - 15, alignItems: "center" }}>
-                {/* <Image source={{ uri: item.image }} style={externalStyles.banner_item_image} /> */}
-                <Image source={{ uri: 'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg' }} style={[externalStyles.banner_item_image, { width: Dimensions.get('window').width - 30, height: Dimensions.get('window').width - 30, borderRadius: 360, }]} />
-            </View>
-        </View>
-    );
-
-    const renderQuizItem = ({ item, index }) => (
-        <View style={externalStyles.home_quiz_render_item_mainview}>
-            <Text style={externalStyles.home_quiz_render_item_title}>{item.quiz_title}</Text>
-            <Pressable onPress={() => {
-                navigation.navigate("QuizScreen", {
-                    paramItem: item,
-                });
-            }}
-                style={externalStyles.home_quiz_render_item_button}>
-                <Text style={externalStyles.home_quiz_render_item_buttonText}>Take Quiz</Text>
-            </Pressable>
-        </View>
-    );
-
     return (
         <View style={externalStyles.container}>
 
             {/* header view */}
             <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: SW(12), marginTop: SH(28.87) }}>
-                <Pressable style={{ padding: 10 }} onPress={() => navigation.goBack()}>
-                    <Image source={images.back_arrow} style={{ height: SH(23), width: SH(23), resizeMode: "contain", tintColor: colors.black }} />
+                <Pressable style={{ padding: 10 }} onPress={() =>  navigation.dispatch(DrawerActions.openDrawer())}>
+                    <Image source={images.drawer_menu} style={{ height: SH(40), width: SH(40), resizeMode: "contain", tintColor: colors.black }} />
                 </Pressable>
                 <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Leaderboard"}</Text>
             </View>
@@ -109,9 +89,10 @@ export default function LeaderBoardScreen({ navigation }) {
 
                         <View style={{ alignItems: "center" }}>
                             <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
+                                <Image source={{ uri: performerList[1]?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                             </View>
                             <View style={{ backgroundColor: "#D9D9D9", borderRadius: 18, marginTop: 13, paddingHorizontal: SW(19), paddingVertical: SH(5) }}>
-                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{"Item2"}</Text>
+                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList[1]?.user_name}</Text>
                             </View>
                             <View style={{ backgroundColor: colors.themeGreenColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                 <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"2"}</Text>
@@ -123,10 +104,11 @@ export default function LeaderBoardScreen({ navigation }) {
 
                         </View> */}
                         <View style={{ alignItems: "center" }}>
-                            <View style={{ backgroundColor: "#D9D9D9", width: SH(128), height: SH(128), borderRadius: 360 ,marginTop: -40}}>
+                            <View style={{ backgroundColor: "#D9D9D9", width: SH(128), height: SH(128), borderRadius: 360, marginTop: -40 }}>
+                                <Image source={{ uri: performerList[0]?.avatar }} style={{ width: SH(128), height: SH(128), borderRadius: 360 }} />
                             </View>
                             <View style={{ backgroundColor: "#D9D9D9", borderRadius: 18, marginTop: 13, paddingHorizontal: SW(19), paddingVertical: SH(5) }}>
-                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{"Item1"}</Text>
+                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList[0]?.user_name}</Text>
                             </View>
                             <View style={{ backgroundColor: colors.themeColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                 <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"1"}</Text>
@@ -137,9 +119,10 @@ export default function LeaderBoardScreen({ navigation }) {
 
                         <View style={{ alignItems: "center" }}>
                             <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
+                                <Image source={{ uri: performerList[2]?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                             </View>
                             <View style={{ backgroundColor: "#D9D9D9", borderRadius: 18, marginTop: 13, paddingHorizontal: SW(19), paddingVertical: SH(5) }}>
-                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{"Item3"}</Text>
+                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList[2]?.user_name}</Text>
                             </View>
                             <View style={{ backgroundColor: colors.themeGreenColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                 <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"3"}</Text>

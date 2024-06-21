@@ -83,7 +83,7 @@ export const externalStyles = StyleSheet.create({
         padding: 10
     },
     headerIcon: {
-        height: SH(23), width: SH(23), resizeMode: "contain" 
+        height: SH(23), width: SH(23), resizeMode: "contain"
     },
     headerText: {
         color: colors.white, fontSize: SF(18), fontFamily: getPopMediumFont()
@@ -102,6 +102,18 @@ export const externalStyles = StyleSheet.create({
     topTabsBarIcon: {
         height: SH(25), width: SH(25), resizeMode: "contain"
     },
+    middleTabItem: {
+        position: 'absolute',
+        bottom: 22, // space from bottombar
+        height: SH(65),
+        width: SH(65),
+        borderRadius: 360,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.themeYellowColor,
+        zIndex: 1,
+    },
+
     // login screen
     login_imageBackground: {
         flex: 1,
@@ -165,6 +177,57 @@ export const externalStyles = StyleSheet.create({
         color: colors.white, fontFamily: getSemiBoldFont(), fontSize: SF(20)
     },
 
+    //Drawer design
+    drawerItemContainer: {
+        paddingLeft: SW(19.89),
+        paddingRight: SW(24.09),
+        paddingVertical: SH(15),
+        borderBottomWidth: 0.6,
+        borderBottomColor: "rgba(0, 0, 0, 1)",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+    },
+    drawerItemText: {
+        fontFamily: getPopMediumFont(),
+        fontWeight: "500",
+        fontSize: SH(20),
+        lineHeight: 21,
+        color: colors.black,
+        marginLeft: SW(14.03),
+    },
+    drawerItemIcon: {
+        height: SH(25),
+        width: SH(25),
+        tintColor: colors.themeColor,
+        resizeMode: "contain"
+    },
+    drawerContentScrollViewstyle: {
+        backgroundColor: colors.white
+    },
+    drawerProfileMainView: {
+        alignItems: "center", marginBottom: SH(30), marginTop: SH(30)
+    },
+    drawerProfileImage: {
+        height: SH(150), width: SH(150), resizeMode: "cover", borderRadius: 360
+    },
+    drawerProfileUserName: {
+        fontFamily: getPopSemiBoldFont(),
+        fontWeight: "500",
+        fontSize: SH(25),
+        color: colors.black,
+        marginTop: SH(10)
+    },
+    drawerProfileDesignation: {
+        fontFamily: getPopRegularFont(),
+        fontWeight: "500",
+        fontSize: SH(20),
+        color: colors.black,
+        marginTop: SH(5)
+    },
+    drawerItemSubContainer: {
+        flexDirection: "row", alignItems: "center"
+    },
 
 
     // queries screen

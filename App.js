@@ -5,11 +5,13 @@
  * @format
  */
 
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import React from 'react';
+import { NavigationContainer, useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
+  Alert,
   Image,
   ImageBackground,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -30,8 +32,15 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SH } from './common/dimensions';
 import LeaderBoardScreen from './screens/LeaderBoardScreen';
 import NotificationScreen from './screens/NotificationScreen';
-import { USER_ID, getSession } from './common/LocalStorage';
+import { TOKEN, USER_ID, clearAsyncStorage, getSession } from './common/LocalStorage';
 import MyProfileScreen from './screens/MyProfileScreen';
+import QuizScreen2 from './screens/QuizScreen2';
+import { DrawerContentScrollView, createDrawerNavigator } from '@react-navigation/drawer';
+import MyResultsScreen from './screens/MyResultsScreen';
+import { APP_NAME } from './common/string';
+import { GET_PROFILE } from './common/webUtils';
+import { CustomConsole, getPopBoldFont, getPopRegularFont, getPopSemiBoldFont } from './common/utils';
+import CommonWeb from './screens/CommonWeb';
 
 // splash screen 
 function SplashScreen() {
@@ -79,13 +88,16 @@ function SplashScreen() {
   );
 };
 
+var user_id;
 
 function App() {
 
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const HomeStack = createNativeStackNavigator();
+  const Drawer = createDrawerNavigator();
 
+  // tabs method
   function MyTabs() {
     return (
       <View style={externalStyles.topTabsView}>
@@ -99,34 +111,14 @@ function App() {
             tabBarShowLabel: false,
             headerShown: false
           }}>
-          <Tab.Screen name="LeaderBoardScreen"
+          <Tab.Screen name="LeaderBoardScreen" component={LeaderBoardScreen}
             options={{
               tabBarIcon: ({ color }) => <Image source={images.bottom_tab_home} style={externalStyles.topTabsBarIcon} />,
-            }} >
-            {() => (
-              <HomeStack.Navigator screenOptions={{
-                headerShown: false,
-              }} initialRouteName='LeaderBoardScreen1'>
-                <HomeStack.Screen name="LeaderBoardScreen1" component={LeaderBoardScreen} />
-              </HomeStack.Navigator>
-            )}
-          </Tab.Screen>
+            }} />
           <Tab.Screen name="HomeScreen1" component={HomeScreen}
             options={{
               tabBarIcon: ({ color }) => (
-                <View
-                  style={{
-                    position: 'absolute',
-                    bottom: 22, // space from bottombar
-                    height: SH(65),
-                    width: SH(65),
-                    borderRadius: 360,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: colors.themeYellowColor,
-                    zIndex: 1,
-                  }}
-                >
+                <View style={externalStyles.middleTabItem}>
                   <Image source={images.bottom_tab_plus} style={externalStyles.topTabsBarIcon} />
                 </View>
               ),
@@ -140,10 +132,183 @@ function App() {
     );
   }
 
+  // drawer method
+  function MyDrawer() {
+    return (
+      <Drawer.Navigator screenOptions={{
+        headerShown: false
+      }}
+        drawerContent={(props) => <CustomDrawerContent {...props} />}>
+        <Drawer.Screen name="Home" component={MyTabs} />
+        <Drawer.Screen name="MyProfileScreen" component={MyProfileScreen} />
+        <Drawer.Screen name="MyResultsScreen" component={MyResultsScreen} />
+      </Drawer.Navigator>
+    );
+  }
+
+  // custom drawer navigation
+  function CustomDrawerContent(props) {
+
+    const focused = useIsFocused();
+    const [user_name, setUserName] = useState("");
+    const [user_email, setUserEmail] = useState("");
+    const [user_phone, setUserPhone] = useState("");
+    const [designation, setDesignation] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [avatar, setAvatar] = useState("");
+
+    React.useEffect(() => {
+      if (focused) {
+        getProfile();
+      }
+    }, [focused]);
+
+    // profile api call
+    const getProfile = async () => {
+      try {
+        setLoading(true);
+
+        const token = await getSession(TOKEN);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
+        const requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+          redirect: "follow"
+        };
+
+        fetch(GET_PROFILE, requestOptions)
+          .then((response) => response.json())
+          .then((json) => {
+            CustomConsole(json);
+
+            if (json.status == 1) {
+              // success response
+
+              setUserName(json.data.user_name);
+              setUserEmail(json.data.user_email);
+              setUserPhone(json.data.user_phone);
+              setDesignation(json.data.designation);
+              setAvatar(json.data.avatar);
+
+            }
+            else {
+              // other reponse status
+              setLoading(false);
+            }
+
+          })
+          .catch((error) => {
+            setLoading(false);
+            CustomConsole("Profile Api Error: " + error);
+          });
+      } catch (error) {
+        setLoading(false);
+        CustomConsole("Profile Api Exception: " + error);
+      }
+    }
+
+    // logout function
+    const logoutFunction = async () => {
+      Alert.alert(APP_NAME, 'Are you sure you want to log out?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'YES', onPress: () => {
+            clearAsyncStorage()
+            props.navigation.navigate("LoginScreen")
+            props.navigation.reset({
+              index: 0,
+              routes: [{ name: 'LoginScreen' }],
+            });
+          }
+        },
+      ]);
+    }
+
+    return (
+      <>
+        <DrawerContentScrollView {...props} style={externalStyles.drawerContentScrollViewstyle}>
+          <View style={{}}>
+            {/* profile image and details screen */}
+            <View style={externalStyles.drawerProfileMainView}>
+              <Image style={externalStyles.drawerProfileImage} source={{ uri: avatar }} />
+              <Text style={externalStyles.drawerProfileUserName}>{user_name}</Text>
+              <Text style={externalStyles.drawerProfileDesignation}>{designation}</Text>
+            </View>
+            {/* end of profile image and details screen */}
+            {/* drawer items view */}
+            <View>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate('Home', { screen: 'HomeScreen1' })}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_quiz}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Active quiz</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("Home", { screen: 'LeaderBoardScreen' })}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_leaderboard}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>LeaderBoard</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("FeedbackFormScreen")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.feedback_icon}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Feedback</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("CommonWeb")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_privacy}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Privacy Policy</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("MyProfile")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_user}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>My Profile</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => logoutFunction()}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_logout}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Log Out</Text>
+                </View>
+              </Pressable>
+            </View>
+             {/* end of drawer items view */}
+          </View>
+        </DrawerContentScrollView>
+      </>
+    );
+  }
+
   return (
     <SafeAreaView style={externalStyles.safeAreaViewContainer}>
       <StatusBar
-        barStyle={'dark-content'}
+        barStyle={'light-content'}
         backgroundColor={colors.black}
       />
       <NavigationContainer>
@@ -154,10 +319,12 @@ function App() {
           initialRouteName='SplashScreen'>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
-          <Stack.Screen name="HomeScreen" component={MyTabs} />
+          <Stack.Screen name="HomeScreen" component={MyDrawer} />
           <Stack.Screen name="QuizScreen" component={QuizScreen} />
+          {/* <Stack.Screen name="QuizScreen" component={QuizScreen2} /> */}
           <Stack.Screen name="FeedbackFormScreen" component={FeedbackFormScreen} />
           <Stack.Screen name="QuizResultScreen" component={QuizResultScreen} />
+          <Stack.Screen name="CommonWeb" component={CommonWeb} />
 
         </Stack.Navigator>
       </NavigationContainer>
