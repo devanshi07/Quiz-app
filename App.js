@@ -6,11 +6,13 @@
  */
 
 import { NavigationContainer, useIsFocused, useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
   ImageBackground,
+  PermissionsAndroid,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -32,7 +34,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SH } from './common/dimensions';
 import LeaderBoardScreen from './screens/LeaderBoardScreen';
 import NotificationScreen from './screens/NotificationScreen';
-import { TOKEN, USER_ID, clearAsyncStorage, getSession } from './common/LocalStorage';
+import { FCM_TOKEN, TOKEN, USER_ID, clearAsyncStorage, getSession, saveSession } from './common/LocalStorage';
 import MyProfileScreen from './screens/MyProfileScreen';
 import QuizScreen2 from './screens/QuizScreen2';
 import { DrawerContentScrollView, createDrawerNavigator } from '@react-navigation/drawer';
@@ -41,12 +43,145 @@ import { APP_NAME } from './common/string';
 import { GET_PROFILE } from './common/webUtils';
 import { CustomConsole, getPopBoldFont, getPopRegularFont, getPopSemiBoldFont } from './common/utils';
 import CommonWeb from './screens/CommonWeb';
+import AvatarUpdateScreen from './screens/AvatarUpdateScreen';
+import ConsistResultsScreen from './screens/ConsistResultsScreen';
+import PerformanceResultsScreen from './screens/PerformanceResultsScreen';
+import messaging from '@react-native-firebase/messaging';
+import firebase from '@react-native-firebase/app';
+import PushNotification from 'react-native-push-notification';
 
 // splash screen 
 function SplashScreen() {
 
   const navigation = useNavigation();
   var isCall = true;
+
+  // firebase
+  // Your secondary Firebase project credentials for Android...
+  const androidCredentials = {
+    clientId: '596884770601',
+    appId: '1:596884770601:android:509e9a09bd6060f656f138',
+    apiKey: 'AIzaSyB5PFwlS2GMGKYi4YW1xhNMAYfcjTLFZ7A',
+    projectId: 'yuva-pahel',
+    databaseURL: '',
+    storageBucket: 'yuva-pahel.appspot.com',
+    messagingSenderId: '596884770601',
+  };
+
+  // Select the relevant credentials
+  const credentials = Platform.select({
+    android: androidCredentials
+  });
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      initFirebase();
+    }
+
+    // pushnotification configure
+    PushNotification.configure({
+      // (optional) Called when Token is generated (iOS and Android)
+      onRegister: function (token) {
+        // console.log('TOKEN:', token);
+      },
+      onNotification: function (notification) {
+      },
+      popInitialNotification: true,
+      requestPermissions: true,
+      // IOS ONLY (optional): default: all - Permissions to register.
+      permissions: {
+        alert: true,
+        badge: false,
+        sound: false,
+      },
+    });
+
+    getToken();
+
+    messaging().onMessage(async remoteMessage => {
+      if (remoteMessage.data.type == "more") {
+        // Linking.openURL(remoteMessage.data.link)
+        // navigation.navigate("HomeScreen", { paramLink: remoteMessage.data.link, paramName: "More Games" })
+        navigation.navigate("HomeScreen");
+      }
+      console.log("remoteMessage : ", remoteMessage.data);
+      //   Show notification in Alert box
+      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      if (remoteMessage.data.type == "more") {
+        // Linking.openURL(remoteMessage.data.link)
+        // navigation.navigate("HomeScreen", { paramLink: remoteMessage.data.link, paramName: "More Games" })
+        navigation.navigate("HomeScreen");
+      }
+      console.log('Message handled in the background!', remoteMessage);
+    });
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage.data.type == "more") {
+        // Linking.openURL(remoteMessage.data.link)
+        // navigation.navigate("WebViewPage", { paramLink: Platform.OS == "android" ? link : link, paramName: "More Games" })
+        // navigation.navigate("WebViewPage", { paramLink: Platform.OS == "android" ? 'https://www.alakmalak.com/alakmalak.co.in/alakmalakapps/other_app.html' : 'https://www.alakmalak.com/alakmalak.co.in/alakmalakapps/ios_app.html', paramName: "More Games" })
+      }
+      console.log('Notification caused app to open from background state:', remoteMessage.notification,);
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          // console.log(
+          //   'Notification caused app to open from quit state:',
+          //   remoteMessage.notification,
+          // );
+
+          // Linking.openURL(remoteMessage.data.link)
+          // navigation.navigate("HomeScreen", { paramLink: remoteMessage.data.link, paramName: "More Games" })
+          navigation.navigate("HomeScreen");
+          // setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+        }
+
+      });
+
+  }, []);
+
+  const initFirebase = async () => {
+    await firebase.initializeApp(credentials);
+  }
+
+  async function getToken() {
+    if (Platform.OS == "android") {
+      await messaging().registerDeviceForRemoteMessages();
+    }
+    const token = await messaging().getToken();
+
+    saveSession(FCM_TOKEN, token);
+    console.log("Token is : " + JSON.stringify(token, 2, null));
+
+  }
+
+
+  useEffect(() => {
+    if (Platform.OS == "android") [
+      requestNotificationPermission()
+    ]
+  }, []);
+
+  const requestNotificationPermission = async () => {
+    try {
+      PermissionsAndroid.requestMultiple(
+        [PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS]
+      ).then((result) => {
+        if (result['android.permission.POST_NOTIFICATIONS'] === 'granted') {
+          // console.log("Granted");
+        }
+      });
+    } catch (err) {
+      // console.warn(err);
+    }
+  };
 
   setTimeout(() => {
     {
@@ -119,13 +254,13 @@ function App() {
             options={{
               tabBarIcon: ({ color }) => (
                 <View style={externalStyles.middleTabItem}>
-                  <Image source={images.bottom_tab_plus} style={externalStyles.topTabsBarIcon} />
+                  <Image source={images.drawer_quiz} style={externalStyles.topTabsBarIconMiddle} />
                 </View>
               ),
             }} />
-          <Tab.Screen name="NotificationScreen" component={MyProfileScreen}
+          <Tab.Screen name="MyProfileScreen" component={MyProfileScreen}
             options={{
-              tabBarIcon: ({ color }) => <Image source={images.bottom_tab_alert} style={externalStyles.topTabsBarIcon} />,
+              tabBarIcon: ({ color }) => <Image source={images.fill_user} style={externalStyles.topTabsBarIcon} />,
             }} />
         </Tab.Navigator>
       </View>
@@ -140,8 +275,9 @@ function App() {
       }}
         drawerContent={(props) => <CustomDrawerContent {...props} />}>
         <Drawer.Screen name="Home" component={MyTabs} />
-        <Drawer.Screen name="MyProfileScreen" component={MyProfileScreen} />
+        {/* <Drawer.Screen name="MyProfileScreen" component={MyProfileScreen} /> */}
         <Drawer.Screen name="MyResultsScreen" component={MyResultsScreen} />
+
       </Drawer.Navigator>
     );
   }
@@ -261,6 +397,43 @@ function App() {
                   <Text style={externalStyles.drawerItemText}>LeaderBoard</Text>
                 </View>
               </Pressable>
+
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("MyResultsScreen")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_result}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>My Results</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("ConsistResultsScreen")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.consistent_icon}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Consistency wise Results</Text>
+                </View>
+              </Pressable>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("PerformanceResultsScreen")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.performace_icon}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Performance wise Results</Text>
+                </View>
+              </Pressable>
+              {/* <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("MyProfileScreen")}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.drawer_user}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>My Profile</Text>
+                </View>
+              </Pressable> */}
               <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("FeedbackFormScreen")}>
                 <View style={externalStyles.drawerItemSubContainer}>
                   <View style={{}}>
@@ -279,15 +452,6 @@ function App() {
                   <Text style={externalStyles.drawerItemText}>Privacy Policy</Text>
                 </View>
               </Pressable>
-              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("MyProfile")}>
-                <View style={externalStyles.drawerItemSubContainer}>
-                  <View style={{}}>
-                    <Image source={images.drawer_user}
-                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
-                  </View>
-                  <Text style={externalStyles.drawerItemText}>My Profile</Text>
-                </View>
-              </Pressable>
               <Pressable style={externalStyles.drawerItemContainer} onPress={() => logoutFunction()}>
                 <View style={externalStyles.drawerItemSubContainer}>
                   <View style={{}}>
@@ -298,7 +462,7 @@ function App() {
                 </View>
               </Pressable>
             </View>
-             {/* end of drawer items view */}
+            {/* end of drawer items view */}
           </View>
         </DrawerContentScrollView>
       </>
@@ -321,10 +485,15 @@ function App() {
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="HomeScreen" component={MyDrawer} />
           <Stack.Screen name="QuizScreen" component={QuizScreen} />
+          {/* <Stack.Screen name="MyProfileScreen" component={MyProfileScreen} /> */}
           {/* <Stack.Screen name="QuizScreen" component={QuizScreen2} /> */}
           <Stack.Screen name="FeedbackFormScreen" component={FeedbackFormScreen} />
           <Stack.Screen name="QuizResultScreen" component={QuizResultScreen} />
           <Stack.Screen name="CommonWeb" component={CommonWeb} />
+          {/* <Stack.Screen name="MyResultsScreen" component={MyResultsScreen} /> */}
+          <Stack.Screen name="AvatarUpdateScreen" component={AvatarUpdateScreen} />
+          <Stack.Screen name="ConsistResultsScreen" component={ConsistResultsScreen} />
+          <Stack.Screen name="PerformanceResultsScreen" component={PerformanceResultsScreen} />
 
         </Stack.Navigator>
       </NavigationContainer>

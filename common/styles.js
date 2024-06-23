@@ -100,7 +100,10 @@ export const externalStyles = StyleSheet.create({
         color: colors.white, fontSize: SF(10), fontFamily: getRegularFont(), fontWeight: "500"
     },
     topTabsBarIcon: {
-        height: SH(25), width: SH(25), resizeMode: "contain"
+        height: SH(25), width: SH(25), resizeMode: "contain",
+    },
+    topTabsBarIconMiddle: {
+        height: SH(25), width: SH(25), resizeMode: "contain", tintColor: colors.white
     },
     middleTabItem: {
         position: 'absolute',
@@ -168,7 +171,7 @@ export const externalStyles = StyleSheet.create({
         color: colors.black, fontFamily: getMediumFont(), fontSize: SF(18)
     },
     home_quiz_render_item_button: {
-        backgroundColor: colors.themeColor, borderRadius: 5, paddingVertical: SH(5), paddingHorizontal: SW(12)
+        backgroundColor: colors.themeColor, borderRadius: 5, paddingVertical: SH(5), paddingHorizontal: SW(12), opacity: 0.5
     },
     home_quiz_render_item_button_active: {
         backgroundColor: colors.themeGreenColor, borderRadius: 5, paddingVertical: SH(5), paddingHorizontal: SW(12)
@@ -235,7 +238,7 @@ export const externalStyles = StyleSheet.create({
         paddingHorizontal: 15
     },
     query_mainview: {
-        marginTop: SH(133)
+        marginTop: SH(100)
     },
     query_headingview: {
         alignItems: "center"
@@ -244,7 +247,7 @@ export const externalStyles = StyleSheet.create({
         fontSize: SF(20), fontFamily: getBoldFont(), color: colors.black
     },
     query_formView: {
-        marginHorizontal: 20, marginTop: 21, borderRadius: 40, paddingHorizontal: 20, paddingTop: 41, borderWidth: 1
+        marginHorizontal: SW(20), marginTop: SH(20), borderRadius: 40, paddingHorizontal: SW(20), paddingTop: SH(41), borderWidth: 1
     },
     query_formTextinput: {
         marginBottom: 20, color: colors.black, fontSize: SF(15), fontFamily: getPopRegularFont(), borderWidth: 1, borderRadius: 14,
@@ -268,4 +271,24 @@ export const externalStyles = StyleSheet.create({
         fontSize: SF(15), fontFamily: getBoldFont(), color: colors.white
     },
 
+    // quiz screen
+    hospital_details_locateModalMainView: {
+        flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    hospital_details_locateModalSubView: {
+        backgroundColor: 'white',
+        borderColor: '#eee',
+        borderRadius: 10,
+        borderWidth: 1,
+        justifyContent: 'space-between',
+        margin: 'auto',
+        padding: 20,
+        width: "90%",
+    },
+    hospital_details_locateModalCancelView: {
+        alignSelf: "center", justifyContent: "center", paddingVertical: SH(10), paddingHorizontal: 15, borderRadius: 5, marginTop: 20, backgroundColor: colors.themeColor
+    },
+    hospital_details_locateModalCancelText: {
+        textAlign: 'center', fontSize: SF(15), color: colors.white, textTransform: "uppercase", fontFamily: getSemiBoldFont(),
+    },
 });

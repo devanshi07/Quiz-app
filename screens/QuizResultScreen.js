@@ -31,14 +31,14 @@ export default function QuizResultScreen({ navigation, route }) {
     function handleBackButtonClick() {
         navigation.navigate("HomeScreen")
         return true;
-      }
-      
-      useEffect(() => {
+    }
+
+    useEffect(() => {
         BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
         return () => {
-          BackHandler.removeEventListener("hardwareBackPress", handleBackButtonClick);
+            BackHandler.removeEventListener("hardwareBackPress", handleBackButtonClick);
         };
-      }, []);
+    }, []);
 
     return (
         <View style={externalStyles.coloredContainer}>
@@ -55,11 +55,11 @@ export default function QuizResultScreen({ navigation, route }) {
             {/* main view */}
             <ScrollView>
                 <View style={{ marginHorizontal: SW(37), alignItems: "center", marginTop: SH(33) }}>
-                    <Image source={images.success_img} style={{ width: SH(304), height: SH(304), resizeMode: "contain" }} />
+                    <Image source={images.success_img} style={{ width: SH(250), height: SH(250), resizeMode: "contain" }} />
                     <Text style={{ color: colors.white, fontSize: SF(30), fontFamily: getPopMediumFont(), marginTop: SH(38) }}>Congratulations</Text>
 
                     {/* score view */}
-                    <View style={{ backgroundColor: colors.themeColor, marginTop: SH(82), borderRadius: 25 }}>
+                    <View style={{ backgroundColor: colors.themeColor, marginTop: SH(62), borderRadius: 25 }}>
                         <View style={{ backgroundColor: colors.white, paddingHorizontal: SW(10), paddingVertical: SH(5), borderRadius: 9, top: -16, alignSelf: "center" }}>
                             <Text style={{ color: colors.black, fontFamily: getPopMediumFont(), fontSize: SF(17) }}>Your Score is</Text>
                         </View>
@@ -76,7 +76,7 @@ export default function QuizResultScreen({ navigation, route }) {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }, { width: SH(85), height: SH(85), borderRadius: 360, backgroundColor: colors.themeColor, zIndex: 1 }]}>
-                                    <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(35), marginLeft: SW(19.19) }}>{get_score}</Text>
+                                    <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(30), marginLeft: SW(19.19) }}>{get_score}</Text>
                                 </View>
                             </View>
                             <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(35), textAlign: "center", textAlignVertical: "center", marginHorizontal: SH(5), marginTop: 5 }}>/</Text>
@@ -92,7 +92,7 @@ export default function QuizResultScreen({ navigation, route }) {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }, { width: SH(85), height: SH(85), borderRadius: 360, backgroundColor: colors.themeColor, zIndex: 1 }]}>
-                                    <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(35), marginRight: SW(19.19) }}>{total_score}</Text>
+                                    <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(30), marginRight: SW(19.19) }}>{total_score}</Text>
                                 </View>
                             </View>
                         </View>
@@ -100,7 +100,7 @@ export default function QuizResultScreen({ navigation, route }) {
                     {/* end of score view */}
 
                     {/* attended question */}
-                    <View style={{ backgroundColor: colors.themeColor, marginTop: SH(82), borderRadius: 25, marginBottom: SH(64) }}>
+                    <View style={{ backgroundColor: colors.themeColor, marginTop: SH(82), borderRadius: 25, marginBottom: SH(20) }}>
                         <View style={{ backgroundColor: colors.white, paddingHorizontal: SW(10), paddingVertical: SH(5), borderRadius: 9, top: -16, alignSelf: "center" }}>
                             <Text style={{ color: colors.black, fontFamily: getPopMediumFont(), fontSize: SF(17) }}>No. of Attended questions</Text>
                         </View>

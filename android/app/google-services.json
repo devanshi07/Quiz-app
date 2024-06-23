@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "596884770601",
+    "project_id": "yuva-pahel",
+    "storage_bucket": "yuva-pahel.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596884770601:android:509e9a09bd6060f656f138",
+        "android_client_info": {
+          "package_name": "com.yuva_pahel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5PFwlS2GMGKYi4YW1xhNMAYfcjTLFZ7A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

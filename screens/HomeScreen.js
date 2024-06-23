@@ -1,16 +1,20 @@
-import { useIsFocused, } from "@react-navigation/native";
+import { DrawerActions, useIsFocused, } from "@react-navigation/native";
 import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
-import { CustomConsole, progressView } from "../common/utils";
+import { CustomConsole, getRegularFont, getSemiBoldFont, progressView } from "../common/utils";
 import { ACTIVE_QUIZ, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { DESIGNATION_ID, TOKEN, getSession, } from "../common/LocalStorage";
+import moment from "moment";
+import { SF, SH, SW } from "../common/dimensions";
+import { colors } from "../common/color";
+import images from "../assets/images";
 
 export default function HomeScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
     const [imageList, setImageList] = useState([]);
-    const [activeQuizList, setActiveQuizList] = useState("");
+    const [activeQuizList, setActiveQuizList] = useState([]);
     const focused = useIsFocused();
     let Flatlistref = useRef(null);
 
@@ -82,7 +86,23 @@ export default function HomeScreen({ navigation }) {
                     CustomConsole(json);
                     if (json.status == 1) {
                         // success response
-                        setActiveQuizList(json.quiz_list);
+                        activeQuizList.length = 0;
+                        for (var i = 0; i < json.quiz_list.length; i++) {
+                            const currentTime = moment();
+                            const quizDateTime = moment(`${json.quiz_list[i].quiz_date} ${json.quiz_list[i].quiz_time}`, 'YYYY-MM-DD HH:mm:ss');
+
+                            activeQuizList.push({
+                                quiz_date: json.quiz_list[i].quiz_date,
+                                quiz_id: json.quiz_list[i].quiz_id,
+                                quiz_time: json.quiz_list[i].quiz_time,
+                                quiz_title: json.quiz_list[i].quiz_title,
+                                status: json.quiz_list[i].status,
+                                total_time: json.quiz_list[i].total_time,
+                                quiz_active: currentTime.isSameOrAfter(quizDateTime)
+                            });
+                        }
+                        setActiveQuizList(activeQuizList);
+                        CustomConsole(activeQuizList);
                         setLoading(false);
                     }
                     else {
@@ -117,10 +137,11 @@ export default function HomeScreen({ navigation }) {
                     paramItem: item,
                 });
             }}
-                disabled={item.status == 1 ? false : true}
-                style={item.status == 1 ? externalStyles.home_quiz_render_item_button_active : externalStyles.home_quiz_render_item_button}>
+                disabled={item.quiz_active ? false : true}
+                style={item.quiz_active ? externalStyles.home_quiz_render_item_button_active : externalStyles.home_quiz_render_item_button}>
                 <Text style={externalStyles.home_quiz_render_item_buttonText}>Take Quiz</Text>
             </Pressable>
+
         </View>
     );
 
@@ -129,6 +150,10 @@ export default function HomeScreen({ navigation }) {
 
             {loading ? progressView(loading) :
                 <>
+
+
+
+
                     {/* banners view */}
                     <View style={externalStyles.banner_main_view}>
                         <View style={externalStyles.banner_sub_view}>
@@ -142,14 +167,31 @@ export default function HomeScreen({ navigation }) {
                         </View>
                     </View>
                     {/* end of banner view */}
-    
+
+                    {/* drawer menu icon */}
+                    <View style={{ position: "absolute", top: 10, marginHorizontal: SW(12), }}>
+                        <Pressable style={{ padding: 10 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+                            <Image source={images.drawer_menu} style={{ height: SH(40), width: SH(40), resizeMode: "contain", tintColor: colors.black }} />
+                        </Pressable>
+                    </View>
+                    {/* end of drawer menu icon */}
+
                     {/* quiz list view */}
                     <Text style={externalStyles.home_active_quiz_text}>Active Quiz</Text>
                     <FlatList
-                     data={activeQuizList}
+                        refreshing={loading}
+                        onRefresh={getActiveQuizList}
+                        data={activeQuizList}
                         style={externalStyles.home_active_quiz_list}
                         ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
                         renderItem={renderQuizItem}
+                        ListEmptyComponent={() => {
+                            return (
+                                <View style={{ width: "100%", alignItems: "center", flex: 1, marginTop: SH(50) }}>
+                                    <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(25), }}>No Active Quiz Found</Text>
+                                </View>
+                            );
+                        }}
                     />
                     {/* end of quiz list view */}
 

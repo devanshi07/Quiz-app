@@ -1,4 +1,4 @@
-package com.quizapp
+package com.yuva_pahel
 
 import android.app.Application
 import com.facebook.react.PackageList

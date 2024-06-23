@@ -127,8 +127,8 @@ export function FeedbackFormScreen({ navigation, route }) {
                             }}>
 
                                 <View style={{
-                                    width: 137,
-                                    height: 137,
+                                    width: 135,
+                                    height: 135,
                                     backgroundColor: colors.themeColor,
                                     borderRadius: 360,
                                     top: -105,
@@ -138,13 +138,13 @@ export function FeedbackFormScreen({ navigation, route }) {
                                     <View style={[{
                                         justifyContent: 'center',
                                         alignItems: 'center',
-                                    }, { width: 130, height: 130, borderRadius: 360, backgroundColor: colors.white, zIndex: 1 }]}>
+                                    }, { width: 128, height: 128, borderRadius: 360, backgroundColor: colors.white, zIndex: 1 }]}>
                                         <Image source={images.feedback_icon} style={{ width: SH(55), height: SH(55), resizeMode: "contain" }} />
                                     </View>
                                 </View>
                             </View>
 
-                            <View style={{ marginTop: -50 }}>
+                            <View style={{ marginTop: -70 }}>
 
                                 {/* name */}
                                 <TextInput

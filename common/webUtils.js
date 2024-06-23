@@ -11,12 +11,16 @@ export const ACTIVE_QUIZ = BASE_URL + 'quizzes/active';
 export const QUIZ_DETAILS = BASE_URL + 'quiz/details'; 
 export const QUIZ_SUBMIT = BASE_URL + 'quiz/submit'; 
 export const PERSONAL_RESULT = BASE_URL + 'quiz/personal-result'; 
-export const TOP_WINNERS = BASE_URL + 'quiz/top-winners?designation_id='; 
+export const TOP_WINNERS = BASE_URL + 'quiz/top-winners?designation_id=';
+
+export const TOP_WINNERS_PERFORMANCE = BASE_URL + 'quiz/top-winners-performance'; 
+export const TOP_WINNERS_CONSISTENT = BASE_URL + 'quiz/top-winners-consistent'; 
 
 export const FEEDBACK = BASE_URL + 'feedback'; 
 
 export const GET_PROFILE = BASE_URL + 'profile'; 
 export const PROFILE_EDIT = BASE_URL + 'profile/edit'; 
+export const AVATAR_LIST = BASE_URL + 'avatars'; 
 
 
 // Common api call for POST method

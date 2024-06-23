@@ -1,5 +1,5 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { Alert, Button, Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Button, Dimensions, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
@@ -14,7 +14,7 @@ import * as Progress from 'react-native-progress';
 
 export default function QuizScreen({ navigation, route }) {
 
-    const paramItem = route.params.paramItem
+    const paramItem = route.params !== undefined && route.params.paramItem !== undefined ? route.params.paramItem : null
 
     const [loading, setLoading] = useState(false);
     const [timer, setTimer] = useState(0);
@@ -28,7 +28,7 @@ export default function QuizScreen({ navigation, route }) {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [score, setScore] = useState(0);
     const [showExplanation, setShowExplanation] = useState(false);
-    const [correctAns, setCorrectAns] = useState('');
+    const [correctAns, setCorrectAns] = useState(0);
     const [selectedOption, setSelectedOption] = useState('');
     const [timeLeft, setTimeLeft] = useState(0); // 60 seconds for quiz
     const [progress, setProgress] = useState(0);
@@ -37,6 +37,13 @@ export default function QuizScreen({ navigation, route }) {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [timerRunning, setTimerRunning] = useState(false);
+    const [typeModal, setTypeModal] = useState(false);
+
+    // modal hide/show
+    const showTypeModal = (text) => {
+        setTypeModal(true);
+    };
+    const hideTypeModal = () => setTypeModal(false);
 
     // Function to format time in hh:mm:ss
     const formatTime = (seconds) => {
@@ -54,19 +61,20 @@ export default function QuizScreen({ navigation, route }) {
                     if (timeLeft > 0) {
                         setTimeLeft(timeLeft - 1);
                     } else {
-                        Alert.alert(APP_NAME, `Quiz completed.`,
-                            [
-                                {
-                                    text: "OK",
-                                    onPress: () => {
-                                        setTimerRunning(false);
-                                        submitQuiz();
-                                    },
-                                    style: "cancel"
-                                },
+                        showTypeModal();
+                        // Alert.alert(APP_NAME, `Quiz completed.`,
+                        //     [
+                        //         {
+                        //             text: "OK",
+                        //             onPress: () => {
+                        //                 setTimerRunning(false);
+                        //                 submitQuiz();
+                        //             },
+                        //             style: "cancel"
+                        //         },
 
-                            ]
-                        );
+                        //     ]
+                        // );
                     }
                 }, 1000);
             }
@@ -167,12 +175,22 @@ export default function QuizScreen({ navigation, route }) {
             myHeaders.append("Content-Type", "application/json");
             myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
-            const raw = JSON.stringify({
-                "quiz_id": paramItem?.quiz_id,
-                "start_time": startTime,
-                "end_time": formatTime(timeLeft),
-                "answers": answerArr
-            });
+            let raw ;
+            if (answerArr.length == 0) {
+                 raw = JSON.stringify({
+                    "quiz_id": paramItem?.quiz_id,
+                    "start_time": startTime,
+                    "end_time": formatTime(timeLeft)
+                    
+                });
+            } else {
+                 raw = JSON.stringify({
+                    "quiz_id": paramItem?.quiz_id,
+                    "start_time": startTime,
+                    "end_time": formatTime(timeLeft),
+                    "answers": answerArr
+                });
+            }
 
             const requestOptions = {
                 method: "POST",
@@ -193,7 +211,7 @@ export default function QuizScreen({ navigation, route }) {
                             paramTotalQuestions: totalQuestions,
                             paramTotalScore: 100,
                             paramAttemptQuestions: attemptQuestion,
-                            paramScore: score
+                            paramScore: (correctAns * 100) / totalQuestions
                         });
                     } else {
                         setLoading(false);
@@ -241,6 +259,7 @@ export default function QuizScreen({ navigation, route }) {
 
     const handleOptionPress = (index, selectedOption, question_id) => {
         if (!isAnswered) {
+            setCorrectAns(correctAns + 1);
             setSelectedOption(index);
             setIsAnswered(true);
             setAttemptQuestion(attemptQuestion + 1);
@@ -291,7 +310,7 @@ export default function QuizScreen({ navigation, route }) {
     const handleNext = () => {
         setIsAnswered(false);
         if (currentQuestion < questionList.length - 1) {
-            setCorrectAns('');
+
             setSelectedOption('');
             setCurrentQuestion(currentQuestion + 1);
             setShowExplanation(false);
@@ -330,14 +349,14 @@ export default function QuizScreen({ navigation, route }) {
                 <Pressable style={externalStyles.headerIconView} onPress={() => navigation.goBack()}>
                     <Image source={images.back_arrow} style={externalStyles.headerIcon} />
                 </Pressable>
-                <Text style={externalStyles.headerText}>{paramItem.quiz_title}</Text>
+                <Text style={externalStyles.headerText}>{"paramItem.quiz_title"}</Text>
             </View>
             {/* end of header view */}
 
             {loading ? coloredProgressView(loading) :
                 <>
                     <ScrollView>
-                        <View style={{ marginHorizontal: SW(37), marginBottom: SH(20) }}>
+                        <View style={{ marginHorizontal: SW(27), marginBottom: SH(20) }}>
 
                             {/* progress bar view */}
                             <View style={{ marginTop: SH(31), marginBottom: SH(27) }}>
@@ -355,9 +374,8 @@ export default function QuizScreen({ navigation, route }) {
                             </View>
                             {/* end of timer view */}
 
-
                             {/* quiz section */}
-                            <View style={{ borderRadius: 40, paddingHorizontal: SW(27), backgroundColor: colors.white, marginTop: SH(100), paddingBottom: SH(37) }}>
+                            <View style={{ borderRadius: 40, paddingHorizontal: SW(27), backgroundColor: colors.white, marginTop: SH(70), paddingBottom: SH(37) }}>
 
                                 {/* question no vew */}
                                 <View style={{
@@ -389,7 +407,7 @@ export default function QuizScreen({ navigation, route }) {
                                 {/* end of question no view */}
 
                                 {/* question view */}
-                                <View style={{ borderWidth: 1, borderColor: colors.themeGreenColor, borderRadius: 11, paddingVertical: 15, paddingHorizontal: 21, marginTop: -15 }}>
+                                <View style={{ borderWidth: 1, borderColor: colors.themeGreenColor, borderRadius: 11, paddingVertical: SH(15), paddingHorizontal: SW(21), marginTop: SH(-15) }}>
                                     <Text style={{ color: colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{questionList[currentQuestion]?.question_text}</Text>
                                 </View>
                                 {/* question */}
@@ -420,7 +438,7 @@ export default function QuizScreen({ navigation, route }) {
 
                                 {/* next button */}
                                 <Pressable onPress={handleNext}
-                                    style={{ backgroundColor: colors.themeYellowColor, alignSelf: "center", paddingHorizontal: 14, paddingVertical: 13, borderRadius: 10, marginTop: 54 }}>
+                                    style={{ backgroundColor: colors.themeYellowColor, alignSelf: "center", paddingHorizontal: SW(14), paddingVertical: SH(13), borderRadius: 10, marginTop: SH(54) }}>
                                     <Text style={{ color: colors.white, fontFamily: getPopMediumFont(), fontSize: SF(18) }}>{currentQuestion < questionList.length - 1 ? "Next" : "Complete"}</Text>
                                 </Pressable>
                                 {/* end of next button */}
@@ -431,6 +449,35 @@ export default function QuizScreen({ navigation, route }) {
                         </View>
                     </ScrollView>
                 </>}
+
+            <Modal
+                onRequestClose={hideTypeModal}
+                // transparent
+                visible={typeModal}
+                animationType={'slide'}
+            >
+                <View style={externalStyles.hospital_details_locateModalMainView} >
+                    <View style={externalStyles.hospital_details_locateModalSubView} >
+
+                        <Image source={images.timer_gif} style={{ width: SH(200), height: SH(200), resizeMode: "contain", alignSelf: "center" }}
+                        />
+                        <Text style={{ color: colors.black, fontFamily: getPopMediumFont(), fontSize: SF(20), textAlign: "center", marginTop: SH(20) }}>{"Oops! Time is over."}</Text>
+
+                        {/* submit button */}
+                        <Pressable
+                            onPress={() => {
+                                setTimerRunning(false);
+                                submitQuiz();
+                            }}
+                            style={externalStyles.hospital_details_locateModalCancelView}>
+                            <Text style={externalStyles.hospital_details_locateModalCancelText}>Submit</Text>
+                        </Pressable>
+                        {/* end of submit */}
+
+                    </View>
+                </View>
+            </Modal>
+
         </View>
     );
 };

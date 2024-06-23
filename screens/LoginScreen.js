@@ -6,13 +6,13 @@ import { colors } from "../common/color";
 import { CustomConsole, alertDialogDisplay } from "../common/utils";
 import { LOGIN } from "../common/webUtils";
 import { useState } from "react";
-import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, saveSession } from "../common/LocalStorage";
+import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { APP_NAME } from "../common/string";
 
 export default function LoginScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
-    const [unique_id, setUniqueId] = useState("qAmYuG");
+    const [unique_id, setUniqueId] = useState("4H2sEm");
     const [password, setPassword] = useState("12345");
     const [show_password, setShowPassword] = useState("");
     const [fcm_token, setFcmToken] = useState("");
@@ -28,10 +28,12 @@ export default function LoginScreen({ navigation }) {
             }
             else {
                 setLoading(true);
+                const fcm_token= await getSession(FCM_TOKEN);
+
                 const formdata = new FormData();
                 formdata.append("unique_id", unique_id);
                 formdata.append("password", password);
-                formdata.append("fcm_token", "fdfgfdgdsdsfgf");
+                formdata.append("fcm_token", fcm_token);
 
                 const requestOptions = {
                     method: "POST",

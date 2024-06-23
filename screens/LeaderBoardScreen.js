@@ -45,7 +45,7 @@ export default function LeaderBoardScreen({ navigation }) {
 
                     if (json.status == 1) {
                         // success response
-                        setPerformerList(json.data);
+                        setPerformerList(json.top_winners);
                         setLoading(false);
                     }
                     else {
@@ -64,12 +64,22 @@ export default function LeaderBoardScreen({ navigation }) {
         }
     }
 
+    // performer item view
+    const renderPerformerItem = ({ item, index }) => (
+        <View style={externalStyles.home_quiz_render_item_mainview}>
+            <Text style={externalStyles.home_quiz_render_item_title}>{item.name}</Text>
+
+
+
+        </View>
+    );
+
     return (
         <View style={externalStyles.container}>
 
             {/* header view */}
             <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: SW(12), marginTop: SH(28.87) }}>
-                <Pressable style={{ padding: 10 }} onPress={() =>  navigation.dispatch(DrawerActions.openDrawer())}>
+                <Pressable style={{ padding: 10 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
                     <Image source={images.drawer_menu} style={{ height: SH(40), width: SH(40), resizeMode: "contain", tintColor: colors.black }} />
                 </Pressable>
                 <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Leaderboard"}</Text>
@@ -78,21 +88,25 @@ export default function LeaderBoardScreen({ navigation }) {
 
             <ScrollView>
                 <View style={{ backgroundColor: colors.themeColor, borderRadius: 360, width: 450, height: 450, alignItems: "center", top: -170, alignSelf: "center" }}>
+                    
+                    {/* sub header view */}
                     <View style={{ backgroundColor: colors.white, borderRadius: 360, width: 435, height: 435, alignItems: "center", justifyContent: "center" }}>
                         <View style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), marginTop: 100 }}>
                             <Text style={{ color: colors.white, fontSize: SF(30), fontFamily: getPopBoldFont() }}>{"Leadership"}</Text>
                         </View>
                         <Text style={{ color: '#292929', fontSize: SF(22), fontFamily: getPopSemiBoldFont(), marginTop: SH(31) }}>{"Top 3 Month Results"}</Text>
                     </View>
+                    {/* end of sub header view */}
 
+                    {/* rankers view */}
                     <View style={{ flexDirection: "row", alignItems: "center", marginTop: -30 }}>
 
                         <View style={{ alignItems: "center" }}>
                             <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
-                                <Image source={{ uri: performerList[1]?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
+                                <Image source={{ uri: performerList?.find(element => element.rank == 2)?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                             </View>
                             <View style={{ backgroundColor: "#D9D9D9", borderRadius: 18, marginTop: 13, paddingHorizontal: SW(19), paddingVertical: SH(5) }}>
-                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList[1]?.user_name}</Text>
+                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList?.find(element => element.rank == 2)?.name}</Text>
                             </View>
                             <View style={{ backgroundColor: colors.themeGreenColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                 <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"2"}</Text>
@@ -100,15 +114,13 @@ export default function LeaderBoardScreen({ navigation }) {
                         </View>
 
                         <View style={{ width: SW(15) }} />
-                        {/* <View style={{ backgroundColor: "#D9D9D9", width: SH(128), height: SH(128), borderRadius: 360, marginTop: -40 }}>
 
-                        </View> */}
                         <View style={{ alignItems: "center" }}>
                             <View style={{ backgroundColor: "#D9D9D9", width: SH(128), height: SH(128), borderRadius: 360, marginTop: -40 }}>
-                                <Image source={{ uri: performerList[0]?.avatar }} style={{ width: SH(128), height: SH(128), borderRadius: 360 }} />
+                                <Image source={{ uri: performerList?.find(element => element.rank == 1)?.avatar }} style={{ width: SH(128), height: SH(128), borderRadius: 360 }} />
                             </View>
                             <View style={{ backgroundColor: "#D9D9D9", borderRadius: 18, marginTop: 13, paddingHorizontal: SW(19), paddingVertical: SH(5) }}>
-                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList[0]?.user_name}</Text>
+                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList?.find(element => element.rank == 1)?.name}</Text>
                             </View>
                             <View style={{ backgroundColor: colors.themeColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                 <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"1"}</Text>
@@ -119,20 +131,21 @@ export default function LeaderBoardScreen({ navigation }) {
 
                         <View style={{ alignItems: "center" }}>
                             <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
-                                <Image source={{ uri: performerList[2]?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
+                                <Image source={{ uri: performerList?.find(element => element.rank == 3)?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                             </View>
                             <View style={{ backgroundColor: "#D9D9D9", borderRadius: 18, marginTop: 13, paddingHorizontal: SW(19), paddingVertical: SH(5) }}>
-                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList[2]?.user_name}</Text>
+                                <Text style={{ color: colors.black, fontSize: SF(15), fontFamily: getPopMediumFont(), textAlign: "center" }}>{performerList?.find(element => element.rank == 3)?.name}</Text>
                             </View>
                             <View style={{ backgroundColor: colors.themeGreenColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                 <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"3"}</Text>
                             </View>
                         </View>
                     </View>
+                    {/* <Text style={{ color: '#292929', fontSize: SF(22), fontFamily: getPopSemiBoldFont(), marginTop: SH(31) }}>{"No one found"}</Text> */}
+
+                    {/* end of rankers view */}
 
                 </View>
-
-
             </ScrollView>
 
         </View>
