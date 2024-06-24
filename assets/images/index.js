@@ -23,5 +23,6 @@ const images = {
     performace_icon: require('./performace_icon.png'),
     fill_user: require('./user.png'),
     choose_image: require('./choose_image.png'),
+    success_gif: require('./success_gif.gif'),
 };
 export default images;

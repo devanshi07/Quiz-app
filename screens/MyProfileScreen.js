@@ -19,6 +19,7 @@ export default function MyProfileScreen({ navigation }) {
     const [user_phone, setUserPhone] = useState("");
     const [designation, setDesignation] = useState("");
     const [avatar, setAvatar] = useState("");
+    const [profilePic, setProfilePic] = useState("");
     const focused = useIsFocused();
     let Flatlistref = useRef(null);
 
@@ -57,6 +58,7 @@ export default function MyProfileScreen({ navigation }) {
                         setUserPhone(json.data.user_phone);
                         setDesignation(json.data.designation);
                         setAvatar(json.data.avatar);
+                        setProfilePic(json.data.profile_pic);
                         setLoading(false);
                     }
                     else {
@@ -153,7 +155,7 @@ export default function MyProfileScreen({ navigation }) {
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                     }, { width: 38 * 2, height: 38 * 2, borderRadius: 38, backgroundColor: '#EAEBED', zIndex: 1, top: -38, borderWidth: 1, borderColor: colors.themeGreenColor }]}>
-                                        <Image source={{ uri: avatar }} style={{ width: 38 * 2, height: 38 * 2, resizeMode: "cover", borderRadius: 38 }} />
+                                        <Image source={{ uri: profilePic != "" ? profilePic : avatar }} style={{ width: 38 * 2, height: 38 * 2, resizeMode: "cover", borderRadius: 38 }} />
                                     </View>
 
                                     <View style={[{
@@ -171,7 +173,7 @@ export default function MyProfileScreen({ navigation }) {
                                 </View>
                                 {/* end of question no view */}
 
-                                <Pressable onPress={() => navigation.navigate('AvatarUpdateScreen', { paramImage: avatar })}
+                                <Pressable onPress={() => navigation.navigate('AvatarUpdateScreen', { paramImage: avatar, paramName: user_name, paramMobile: user_phone })}
                                     style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(22), fontFamily: getPopSemiBoldFont() }}>{"Update Avatar"}</Text>
                                 </Pressable>

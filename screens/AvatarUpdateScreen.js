@@ -1,8 +1,8 @@
 import { useIsFocused, } from "@react-navigation/native";
-import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
+import { FlatList, Image, Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { externalStyles } from "../common/styles";
-import { CustomConsole, getPopMediumFont, getRegularFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, AVATAR_LIST, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
+import { CustomConsole, getPopMediumFont, getPopSemiBoldFont, getRegularFont, getSemiBoldFont, progressView } from "../common/utils";
+import { ACTIVE_QUIZ, AVATAR_LIST, PROFILE_EDIT, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, DESIGNATION_ID, TOKEN, getSession, } from "../common/LocalStorage";
 import moment from "moment";
@@ -16,14 +16,29 @@ export default function AvatarUpdateScreen({ navigation, route }) {
     const [loading, setLoading] = useState(false);
     const [imageList, setImageList] = useState([]);
     const [image, setImage] = useState('');
+    const [userName, setUserName] = useState('');
+    const [userPhone, setUserPhone] = useState('');
+    const [avatar_id, setAvatarId] = useState('');
     const [imageUploadPath, setImageUploadPath] = useState(null);
+    const [typeModal, setTypeModal] = useState(false);
     const focused = useIsFocused();
-    let Flatlistref = useRef(null);
+
+    // modal hide/show
+    const showTypeModal = (text) => {
+        setTypeModal(true);
+    };
+    const hideTypeModal = () => setTypeModal(false);
 
     useEffect(() => {
         if (focused) {
             if (route.params && route.params.paramImage) {
                 setImage(route.params.paramImage);
+            }
+            if (route.params && route.params.paramName) {
+                setUserName(route.params.paramName);
+            }
+            if (route.params && route.params.paramMobile) {
+                setUserPhone(route.params.paramMobile);
             }
             getSliderList();
         }
@@ -56,11 +71,11 @@ export default function AvatarUpdateScreen({ navigation, route }) {
                 })
                 .catch((error) => {
                     setLoading(false);
-                    CustomConsole("Slider List Api Error: " + error);
+                    CustomConsole("Avatar List Api Error: " + error);
                 });
         } catch (error) {
             setLoading(false);
-            CustomConsole("Slider List Api Exception: " + error);
+            CustomConsole("Avatar List Api Exception: " + error);
         }
     }
 
@@ -79,11 +94,78 @@ export default function AvatarUpdateScreen({ navigation, route }) {
     }
 
     // quiz item view
-    const renderQuizItem = ({ item, index }) => (
-        <View style={{}}>
-            <Image source={{ uri: item.avatar_image }} style={{ height: SH(120), width: SH(120), resizeMode: "cover", borderRadius: 360 }} />
-        </View>
-    );
+    const renderQuizItem = ({ item, index }) => {
+        if (item.plusImage) {
+            return (
+                <Pressable onPress={openImagePicker}
+                    style={{ alignItems: "center", borderRadius: 360, borderWidth: imageUploadPath != null ? 2 : 1, height: SH(130), width: SH(130), justifyContent: "center", margin: SH(20), opacity: imageUploadPath != null ? 0.5 : 1 }}>
+                    {imageUploadPath != null ?
+                        <Image source={{ uri: image }} style={{ height: SH(110), width: SH(110), resizeMode: "cover", borderRadius: 360, }} />
+                        :
+                        <>
+                            <Image source={images.choose_image} style={{ width: SH(50), height: SH(50), resizeMode: "contain" }} />
+                            <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(15), textAlign: "center" }}>{"Choose\nAvatar"}</Text>
+                        </>
+                    }
+                </Pressable>
+            );
+        } else {
+            return (
+                <TouchableOpacity onPress={() => {
+                    setImage(item.avatar_image);
+                    setAvatarId(item.avatar_id);
+                }}
+                    style={{ margin: SH(20), borderWidth: image == item.avatar_image ? 3 : 0, borderRadius: 360, opacity: image == item.avatar_image ? 0.5 : 1 }}>
+                    <Image source={{ uri: item.avatar_image }} style={{ height: SH(120), width: SH(120), resizeMode: "cover", borderRadius: 360, }} />
+                </TouchableOpacity>
+            );
+        }
+    }
+
+    // update avatar api call
+    const updateAvatarApiCall = async () => {
+        try {
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", "Bearer 7E1KHHUvOjnJBL07nEOoVs194aLyLodQYp8Z7qp0bc439e48");
+
+            const formdata = new FormData();
+            formdata.append("fname", userName.split(" ")[0]);
+            formdata.append("lname", userName.split(" ")[1]);
+            formdata.append("mo", userPhone);
+            if (imageUploadPath != null) {
+                formdata.append("photo", imageUploadPath);
+            } else {
+                formdata.append("avatar_id", avatar_id);
+            }
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: formdata,
+                redirect: "follow"
+            };
+            setLoading(true);
+            fetch(PROFILE_EDIT, requestOptions)
+                .then((response) => response.json())
+                .then((json) => {
+                    console.log(json);
+                    if (json.status == 1) {
+                        setLoading(false);
+                        showTypeModal();
+                    } else {
+                        setLoading(false);
+                    }
+
+                })
+                .catch((error) => {
+                    setLoading(false);
+                    CustomConsole("Avatar Update Api Error: " + error);
+                });
+        } catch (error) {
+            setLoading(false);
+            CustomConsole("Avatar Update Api Exception: " + error);
+        }
+    }
 
     return (
         <View style={externalStyles.container}>
@@ -100,17 +182,15 @@ export default function AvatarUpdateScreen({ navigation, route }) {
             {loading ? progressView(loading) :
                 <>
 
-                    <View style={{ alignSelf: "center", marginTop: SH(50) }}>
+                    {/* <View style={{ alignSelf: "center", marginTop: SH(50) }}>
                         <Image source={{ uri: image }} style={{ height: SH(150), width: SH(150), resizeMode: "cover", borderRadius: 360 }} />
-                    </View>
+                    </View> */}
 
                     {/* quiz list view */}
                     <FlatList
-                        refreshing={loading}
-                        data={imageList}
+                        data={[...imageList, { plusImage: true }]}
                         numColumns={2}
                         style={{ marginTop: SH(55), marginBottom: SH(30), alignSelf: "center" }}
-                        ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
                         renderItem={renderQuizItem}
                         ListEmptyComponent={() => {
                             return (
@@ -119,24 +199,54 @@ export default function AvatarUpdateScreen({ navigation, route }) {
                                 </View>
                             );
                         }}
-                        ListFooterComponent={() => {
-                            return (
-                                <Pressable onPress={openImagePicker}
-                                    style={{ alignItems: "center", borderRadius: 360, borderWidth: 1, height: SH(120), width: SH(120), justifyContent: "center" }}>
-                                    <Image source={images.choose_image} style={{ width: SH(50), height: SH(50), resizeMode: "contain" }} />
-                                    <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(15), textAlign: "center" }}>{"Choose\nAvatar"}</Text>
-                                </Pressable>
-                            );
-                        }}
+                    // ListFooterComponent={() => {
+                    //     return (
+                    //         <Pressable onPress={openImagePicker}
+                    //             style={{ alignItems: "center", borderRadius: 360, borderWidth: 1, height: SH(120), width: SH(120), justifyContent: "center", margin: SH(20) }}>
+                    //             <Image source={images.choose_image} style={{ width: SH(50), height: SH(50), resizeMode: "contain" }} />
+                    //             <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(15), textAlign: "center" }}>{"Choose\nAvatar"}</Text>
+                    //         </Pressable>
+                    //     );
+                    // }}
                     />
                     {/* end of quiz list view */}
 
-                    <Image source={{ uri: 'https://quiz.primaldevs.com/images/staff/avatar17191348891242.jpg' }}
-                        style={{
-                            height: SH(200), width: SH(200), resizeMode: "contain"
-                        }} />
+                    <Pressable onPress={() => updateAvatarApiCall()}
+                        style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center" }}>
+                        <Text style={{ color: colors.white, fontSize: SF(22), fontFamily: getPopSemiBoldFont() }}>{"Select"}</Text>
+                    </Pressable>
+
 
                 </>}
+
+                <Modal
+                onRequestClose={hideTypeModal}
+                // transparent
+                visible={typeModal}
+                // visible={true}
+                animationType={'slide'}
+            >
+                <View style={externalStyles.hospital_details_locateModalMainView} >
+                    <View style={externalStyles.hospital_details_locateModalSubView} >
+
+                        <Image source={images.success_gif} style={{ width: SH(200), height: SH(200), resizeMode: "contain", alignSelf: "center" }}
+                        />
+                        <Text style={{ color: colors.black, fontFamily: getPopMediumFont(), fontSize: SF(20), textAlign: "center", marginTop: SH(20) }}>{"Your Avatar Updated Successfully."}</Text>
+
+                        {/* submit button */}
+                        <Pressable
+                            onPress={() => {
+                                hideTypeModal();
+                                navigation.navigate("MyProfileScreen");
+                            }}
+                            style={externalStyles.hospital_details_locateModalCancelView}>
+                            <Text style={externalStyles.hospital_details_locateModalCancelText}>Go to Profile</Text>
+                        </Pressable>
+                        {/* end of submit */}
+
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
