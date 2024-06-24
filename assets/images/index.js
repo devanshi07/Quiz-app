@@ -22,5 +22,6 @@ const images = {
     consistent_icon: require('./consistent_icon.png'),
     performace_icon: require('./performace_icon.png'),
     fill_user: require('./user.png'),
+    choose_image: require('./choose_image.png'),
 };
 export default images;

@@ -4,7 +4,7 @@ import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
-import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopRegularFont, getPopSemiBoldFont, getSemiBoldFont } from "../common/utils";
+import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopRegularFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
 import { ACTIVE_QUIZ, LOGIN, PERSONAL_RESULT, SLIDER_DETAILS, SLIDER_LIST, TOP_WINNERS } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
@@ -69,10 +69,10 @@ export default function MyResultsScreen({ navigation }) {
         <View style={{
             marginHorizontal: SW(32), borderWidth: 1, borderColor: "white", borderRadius: 14, padding: 7
         }}>
-            <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(20)}}>{item.quiz_name}</Text>
-            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16)}}>Correct Answers: {item.correct_answers}</Text>
-            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16)}}>Wrong Answers: {item.wrong_answers}</Text>
-            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16)}}>Total time: {item.total_time}</Text>
+            <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(20) }}>{item.quiz_name}</Text>
+            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16) }}>Correct Answers: {item.correct_answers}</Text>
+            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16) }}>Wrong Answers: {item.wrong_answers}</Text>
+            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16) }}>Total time: {item.total_time}</Text>
         </View>
     );
 
@@ -88,17 +88,19 @@ export default function MyResultsScreen({ navigation }) {
             </View>
             {/* end of header view */}
 
-            <FlatList
-                data={resultList}
-                style={{
-                    marginTop: SH(55), marginBottom: SH(30), backgroundColor: colors.themeYellowColor, marginHorizontal: SW(37), borderRadius: 40
-                }}
-                ListHeaderComponent={() => <View style={{ alignSelf: "center", marginTop: SH(34), marginBottom: SH(67) }}>
-                    <Text style={{ color: colors.white, fontSize: SF(23), fontFamily: getSemiBoldFont() }}>{"Quiz's Results"}</Text>
-                </View>}
-                ItemSeparatorComponent={() => (<View style={{ height: SH(22) }} />)}
-                renderItem={renderResultItem}
-            />
+            {loading ? progressView(loading) :
+                <FlatList
+                    data={resultList}
+                    style={{
+                        marginTop: SH(55), marginBottom: SH(30), backgroundColor: colors.themeYellowColor, marginHorizontal: SW(37), borderRadius: 40
+                    }}
+                    ListHeaderComponent={() => <View style={{ alignSelf: "center", marginTop: SH(34), marginBottom: SH(67) }}>
+                        <Text style={{ color: colors.white, fontSize: SF(23), fontFamily: getSemiBoldFont() }}>{"Quiz's Results"}</Text>
+                    </View>}
+                    ItemSeparatorComponent={() => (<View style={{ height: SH(22) }} />)}
+                    renderItem={renderResultItem}
+                />
+            }
         </View>
     );
 };

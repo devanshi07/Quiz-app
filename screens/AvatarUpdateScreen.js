@@ -9,17 +9,22 @@ import moment from "moment";
 import { SF, SH, SW } from "../common/dimensions";
 import { colors } from "../common/color";
 import images from "../assets/images";
+import { launchCamera, launchImageLibrary, ImagePicker } from 'react-native-image-picker';
 
-export default function AvatarUpdateScreen({ navigation }) {
+export default function AvatarUpdateScreen({ navigation, route }) {
 
     const [loading, setLoading] = useState(false);
     const [imageList, setImageList] = useState([]);
-    const [activeQuizList, setActiveQuizList] = useState([]);
+    const [image, setImage] = useState('');
+    const [imageUploadPath, setImageUploadPath] = useState(null);
     const focused = useIsFocused();
     let Flatlistref = useRef(null);
 
     useEffect(() => {
         if (focused) {
+            if (route.params && route.params.paramImage) {
+                setImage(route.params.paramImage);
+            }
             getSliderList();
         }
     }, [focused]);
@@ -41,7 +46,7 @@ export default function AvatarUpdateScreen({ navigation }) {
 
                     if (json.status == 1) {
                         // success response
-                        setImageList(json.data.slides);
+                        setImageList(json.data);
                         setLoading(false);
                     }
                     else {
@@ -59,19 +64,24 @@ export default function AvatarUpdateScreen({ navigation }) {
         }
     }
 
-    // banner item view
-    const renderImageItem = ({ item, index }) => (
-        <View style={externalStyles.banner_item_view}>
-            <Image source={{ uri: item }} style={externalStyles.banner_item_image} />
-        </View>
-    );
+    // select image
+    const openImagePicker = async () => {
+        var options = {
+            title: 'Select Profile Image',
+            mediaType: 'photo',
+        };
+        const result = await launchImageLibrary(options);
+        console.log("result==>", result);
+        console.log("result==>", result.assets[0].uri);
+        setImage(result.assets[0].uri);
+        setImageUploadPath({ uri: result.assets[0].uri, name: result.assets[0].fileName, filename: result.assets[0].fileName, type: result.assets[0].type });
+        console.log(imageUploadPath)
+    }
 
     // quiz item view
     const renderQuizItem = ({ item, index }) => (
-        <View style={externalStyles.home_quiz_render_item_mainview}>
-            <Text style={externalStyles.home_quiz_render_item_title}>{item.quiz_title}</Text>
-
-
+        <View style={{}}>
+            <Image source={{ uri: item.avatar_image }} style={{ height: SH(120), width: SH(120), resizeMode: "cover", borderRadius: 360 }} />
         </View>
     );
 
@@ -90,11 +100,16 @@ export default function AvatarUpdateScreen({ navigation }) {
             {loading ? progressView(loading) :
                 <>
 
+                    <View style={{ alignSelf: "center", marginTop: SH(50) }}>
+                        <Image source={{ uri: image }} style={{ height: SH(150), width: SH(150), resizeMode: "cover", borderRadius: 360 }} />
+                    </View>
+
                     {/* quiz list view */}
-                    {/* <FlatList
+                    <FlatList
                         refreshing={loading}
-                        data={activeQuizList}
-                        style={externalStyles.home_active_quiz_list}
+                        data={imageList}
+                        numColumns={2}
+                        style={{ marginTop: SH(55), marginBottom: SH(30), alignSelf: "center" }}
                         ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
                         renderItem={renderQuizItem}
                         ListEmptyComponent={() => {
@@ -104,7 +119,16 @@ export default function AvatarUpdateScreen({ navigation }) {
                                 </View>
                             );
                         }}
-                    /> */}
+                        ListFooterComponent={() => {
+                            return (
+                                <Pressable onPress={openImagePicker}
+                                    style={{ alignItems: "center", borderRadius: 360, borderWidth: 1, height: SH(120), width: SH(120), justifyContent: "center" }}>
+                                    <Image source={images.choose_image} style={{ width: SH(50), height: SH(50), resizeMode: "contain" }} />
+                                    <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(15), textAlign: "center" }}>{"Choose\nAvatar"}</Text>
+                                </Pressable>
+                            );
+                        }}
+                    />
                     {/* end of quiz list view */}
 
                     <Image source={{ uri: 'https://quiz.primaldevs.com/images/staff/avatar17191348891242.jpg' }}

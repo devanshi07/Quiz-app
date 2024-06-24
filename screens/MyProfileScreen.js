@@ -171,7 +171,7 @@ export default function MyProfileScreen({ navigation }) {
                                 </View>
                                 {/* end of question no view */}
 
-                                <Pressable onPress={() => navigation.navigate('AvatarUpdateScreen')}
+                                <Pressable onPress={() => navigation.navigate('AvatarUpdateScreen', { paramImage: avatar })}
                                     style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(22), fontFamily: getPopSemiBoldFont() }}>{"Update Avatar"}</Text>
                                 </Pressable>
