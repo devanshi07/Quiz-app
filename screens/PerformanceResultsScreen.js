@@ -68,8 +68,8 @@ export default function PerformanceResultsScreen({ navigation }) {
 
             {/* header view */}
             <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: SW(12), marginTop: SH(28.87) }}>
-                <Pressable style={{ padding: 10 }} onPress={() => navigation.goBack()}>
-                    <Image source={images.back_arrow} style={{ height: SH(23), width: SH(23), resizeMode: "contain", tintColor: colors.black }} />
+                <Pressable style={{ padding: 10 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+                    <Image source={images.drawer_menu} style={{ height: SH(40), width: SH(40), resizeMode: "contain", tintColor: colors.black }} />
                 </Pressable>
                 <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Performance wise Results"}</Text>
             </View>

@@ -125,8 +125,9 @@ export default function AvatarUpdateScreen({ navigation, route }) {
     // update avatar api call
     const updateAvatarApiCall = async () => {
         try {
+            const token = await getSession(TOKEN);
             const myHeaders = new Headers();
-            myHeaders.append("Authorization", "Bearer 7E1KHHUvOjnJBL07nEOoVs194aLyLodQYp8Z7qp0bc439e48");
+            myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
             const formdata = new FormData();
             formdata.append("fname", userName.split(" ")[0]);
@@ -219,7 +220,7 @@ export default function AvatarUpdateScreen({ navigation, route }) {
 
                 </>}
 
-                <Modal
+            <Modal
                 onRequestClose={hideTypeModal}
                 // transparent
                 visible={typeModal}

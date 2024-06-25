@@ -24,5 +24,6 @@ const images = {
     fill_user: require('./user.png'),
     choose_image: require('./choose_image.png'),
     success_gif: require('./success_gif.gif'),
+    alert_blink: require('./alert_blink.gif'),
 };
 export default images;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Alert, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { Alert, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { externalStyles } from '../common/styles';
 import { colors } from '../common/color';
 import { CustomConsole, alertDialogDisplay, getBoldFont, getPopMediumFont, progressView, validateEmail } from '../common/utils';
@@ -19,28 +19,50 @@ export function FeedbackFormScreen({ navigation, route }) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [query, setQuery] = useState("");
-    const [selectedValue, setSelectedValue] = useState("");
     const [phoneNo, setPhoneNo] = useState('');
     const [loading, setLoading] = useState(false);
+    const [typeModal, setTypeModal] = useState(false);
+    const [erroMsg, setErroMsg] = useState("");
+    const [successModal, setSuccessModal] = useState(false);
+    const [successMsg, setSuceessMsg] = useState("");
+
+    // alert modal hide/show
+    const showTypeModal = (text) => {
+        setErroMsg(text);
+        setTypeModal(true);
+    };
+    const hideTypeModal = () => setTypeModal(false);
+
+    // success modal hide/show
+    const showSuccessModal = (text) => {
+        setSuceessMsg(text);
+        setSuccessModal(true);
+    };
+    const hideSuccessModal = () => setSuccessModal(false);
 
     // add query api call
     async function onSubmit() {
         try {
 
             if (name.trim().length == 0) {
-                alertDialogDisplay(APP_NAME, "Please enter name");
+                // alertDialogDisplay(APP_NAME, "Please enter name");
+                showTypeModal("Please enter name");
             }
             else if (phoneNo.trim().length == 0) {
-                Alert.alert(APP_NAME, "Enter Mobile Number");
+                // Alert.alert(APP_NAME, "Enter Mobile Number");
+                showTypeModal("Enter Mobile Number");
             }
             else if (!onlyDigitReg.test(phoneNo)) {
-                Alert.alert(APP_NAME, "Mobile Number should be only digits");
+                // Alert.alert(APP_NAME, "Mobile Number should be only digits");
+                showTypeModal("Mobile Number should be only digits");
             }
             else if (email != "" && !validateEmail(email)) {
-                alertDialogDisplay(APP_NAME, "Please enter proper email");
+                // alertDialogDisplay(APP_NAME, "Please enter proper email");
+                showTypeModal("Please enter proper email");
             }
             else if (query.trim().length == 0) {
-                alertDialogDisplay(APP_NAME, "Please enter query");
+                // alertDialogDisplay(APP_NAME, "Please enter query");
+                showTypeModal("Please enter query");
             }
             else {
                 // alertDialogDisplay(APP_NAME, "success");
@@ -75,7 +97,7 @@ export function FeedbackFormScreen({ navigation, route }) {
 
                         if (json.status == 1) {
                             // success response
-                            alertDialogDisplay(APP_NAME, json.message);
+                            showSuccessModal(json.message);
                             setName('');
                             setEmail('');
                             setQuery('');
@@ -205,6 +227,65 @@ export function FeedbackFormScreen({ navigation, route }) {
                     </View>
                 </ScrollView>}
             {/* end of loader view */}
+
+            {/* error modal view */}
+            <Modal
+                onRequestClose={hideTypeModal}
+                // transparent
+                visible={typeModal}
+                animationType={'slide'}
+            >
+                <View style={externalStyles.hospital_details_locateModalMainView} >
+                    <View style={externalStyles.hospital_details_locateModalSubView} >
+
+                        <Image source={images.alert_blink} style={{ width: SH(200), height: SH(200), resizeMode: "contain", alignSelf: "center" }}
+                        />
+                        <Text style={{ color: colors.black, fontFamily: getPopMediumFont(), fontSize: SF(20), textAlign: "center", marginTop: SH(20) }}>{erroMsg}</Text>
+
+                        {/* submit button */}
+                        <Pressable
+                            onPress={() => {
+                                hideTypeModal();
+                            }}
+                            style={externalStyles.hospital_details_locateModalCancelView}>
+                            <Text style={externalStyles.hospital_details_locateModalCancelText}>Ok</Text>
+                        </Pressable>
+                        {/* end of submit */}
+
+                    </View>
+                </View>
+            </Modal>
+            {/* end of modal view */}
+
+            {/* success modal view */}
+            <Modal
+                onRequestClose={hideSuccessModal}
+                // transparent
+                visible={successModal}
+                animationType={'slide'}
+            >
+                <View style={externalStyles.hospital_details_locateModalMainView} >
+                    <View style={externalStyles.hospital_details_locateModalSubView} >
+
+                        <Image source={images.success_gif} style={{ width: SH(200), height: SH(150), resizeMode: "contain", alignSelf: "center" }}
+                        />
+                        <Text style={{ color: colors.black, fontFamily: getPopMediumFont(), fontSize: SF(20), textAlign: "center", marginTop: SH(20) }}>{successMsg}</Text>
+
+                        {/* submit button */}
+                        <Pressable
+                            onPress={() => {
+                                hideSuccessModal();
+                            }}
+                            style={externalStyles.hospital_details_locateModalCancelView}>
+                            <Text style={externalStyles.hospital_details_locateModalCancelText}>Close</Text>
+                        </Pressable>
+                        {/* end of submit */}
+
+                    </View>
+                </View>
+            </Modal>
+            {/* end of success modal view */}
+
         </View>
     );
 }

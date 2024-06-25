@@ -19,7 +19,7 @@ function CommonWeb({ route, navigation }) {
         <Pressable style={{ padding: 10 }} onPress={() => navigation.goBack()}>
           <Image source={images.back_arrow} style={{ height: SH(23), width: SH(23), resizeMode: "contain", tintColor: colors.black }} />
         </Pressable>
-        <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>Feedback form</Text>
+        <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>Privacy Policy</Text>
       </View>
       {/* end of header view */}
 

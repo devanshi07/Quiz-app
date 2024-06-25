@@ -236,7 +236,7 @@ function App() {
   function MyTabs() {
     return (
       <View style={externalStyles.topTabsView}>
-        <Tab.Navigator initialRouteName='HomeScreen1'
+        <Tab.Navigator initialRouteName='HomeScreen1' backBehavior='initialRoute'
           screenOptions={{
             tabBarStyle: externalStyles.topTabsBarStyle,
             tabBarLabelStyle: externalStyles.topTabsBarLabelStyle,
@@ -246,10 +246,21 @@ function App() {
             tabBarShowLabel: false,
             headerShown: false
           }}>
-          <Tab.Screen name="LeaderBoardScreen" component={LeaderBoardScreen}
+          <Tab.Screen name="LeaderBoardScreen"
+            // component={LeaderBoardScreen}
             options={{
               tabBarIcon: ({ color }) => <Image source={images.bottom_tab_home} style={externalStyles.topTabsBarIcon} />,
-            }} />
+            }}>
+            {() => (
+              <HomeStack.Navigator screenOptions={{
+                headerShown: false,
+              }} initialRouteName='LeaderBoardScreen1'>
+                <HomeStack.Screen name="LeaderBoardScreen1" component={LeaderBoardScreen} />
+                <HomeStack.Screen name="ConsistResultsScreen" component={ConsistResultsScreen} />
+                <HomeStack.Screen name="PerformanceResultsScreen" component={PerformanceResultsScreen} />
+              </HomeStack.Navigator>
+            )}
+          </Tab.Screen>
           <Tab.Screen name="HomeScreen1" component={HomeScreen}
             options={{
               tabBarIcon: ({ color }) => (
@@ -275,8 +286,9 @@ function App() {
       }}
         drawerContent={(props) => <CustomDrawerContent {...props} />}>
         <Drawer.Screen name="Home" component={MyTabs} />
-        {/* <Drawer.Screen name="MyProfileScreen" component={MyProfileScreen} /> */}
         <Drawer.Screen name="MyResultsScreen" component={MyResultsScreen} />
+        {/* <Drawer.Screen name="ConsistResultsScreen" component={ConsistResultsScreen} />
+        <Drawer.Screen name="PerformanceResultsScreen" component={PerformanceResultsScreen} /> */}
 
       </Drawer.Navigator>
     );
@@ -388,7 +400,12 @@ function App() {
                   <Text style={externalStyles.drawerItemText}>Active quiz</Text>
                 </View>
               </Pressable>
-              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("Home", { screen: 'LeaderBoardScreen' })}>
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("Home", {
+                screen: 'LeaderBoardScreen',
+                params: {
+                  screen: 'LeaderBoardScreen1'
+                }
+              })}>
                 <View style={externalStyles.drawerItemSubContainer}>
                   <View style={{}}>
                     <Image source={images.drawer_leaderboard}
@@ -407,7 +424,13 @@ function App() {
                   <Text style={externalStyles.drawerItemText}>My Results</Text>
                 </View>
               </Pressable>
-              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("ConsistResultsScreen")}>
+
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("Home", {
+                screen: 'LeaderBoardScreen',
+                params: {
+                  screen: 'ConsistResultsScreen'
+                }
+              })}>
                 <View style={externalStyles.drawerItemSubContainer}>
                   <View style={{}}>
                     <Image source={images.consistent_icon}
@@ -416,7 +439,13 @@ function App() {
                   <Text style={externalStyles.drawerItemText}>Consistency wise Results</Text>
                 </View>
               </Pressable>
-              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("PerformanceResultsScreen")}>
+
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("Home", {
+                screen: 'LeaderBoardScreen',
+                params: {
+                  screen: 'PerformanceResultsScreen'
+                }
+              })}>
                 <View style={externalStyles.drawerItemSubContainer}>
                   <View style={{}}>
                     <Image source={images.performace_icon}
@@ -492,8 +521,6 @@ function App() {
           <Stack.Screen name="CommonWeb" component={CommonWeb} />
           {/* <Stack.Screen name="MyResultsScreen" component={MyResultsScreen} /> */}
           <Stack.Screen name="AvatarUpdateScreen" component={AvatarUpdateScreen} />
-          <Stack.Screen name="ConsistResultsScreen" component={ConsistResultsScreen} />
-          <Stack.Screen name="PerformanceResultsScreen" component={PerformanceResultsScreen} />
 
         </Stack.Navigator>
       </NavigationContainer>

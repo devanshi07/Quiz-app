@@ -12,8 +12,10 @@ import { APP_NAME } from "../common/string";
 export default function LoginScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
-    const [unique_id, setUniqueId] = useState("4H2sEm");
-    const [password, setPassword] = useState("12345");
+    // const [unique_id, setUniqueId] = useState("4H2sEm");
+    // const [password, setPassword] = useState("12345");
+    const [unique_id, setUniqueId] = useState("");
+    const [password, setPassword] = useState("");
     const [show_password, setShowPassword] = useState("");
     const [fcm_token, setFcmToken] = useState("");
 
