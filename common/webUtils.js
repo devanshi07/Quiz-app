@@ -1,6 +1,7 @@
 import { CustomConsole } from "./utils";
 
-export const BASE_URL = 'https://quiz.primaldevs.com/api/';
+// export const BASE_URL = 'https://quiz.primaldevs.com/api/';
+export const BASE_URL = 'https://yuvapahel.com/api/';
 
 export const LOGIN = BASE_URL + 'login';
 export const LOGOUT = BASE_URL + 'logout';
