@@ -3,7 +3,7 @@ import { Image, ImageBackground, Pressable, Text, View, TextInput } from "react-
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
-import { CustomConsole, alertDialogDisplay } from "../common/utils";
+import { CustomConsole, alertDialogDisplay, progressView } from "../common/utils";
 import { LOGIN } from "../common/webUtils";
 import { useState } from "react";
 import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
             }
             else {
                 setLoading(true);
-                const fcm_token= await getSession(FCM_TOKEN);
+                const fcm_token = await getSession(FCM_TOKEN);
 
                 const formdata = new FormData();
                 formdata.append("unique_id", unique_id);
@@ -92,49 +92,51 @@ export default function LoginScreen({ navigation }) {
 
     return (
         <View style={externalStyles.container}>
-            <ImageBackground source={images.login_background} style={externalStyles.login_imageBackground}>
-                <Image source={images.app_logo} style={externalStyles.login_app_logo} />
+            {loading ? progressView(loading) :
+                <ImageBackground source={images.login_background} style={externalStyles.login_imageBackground}>
+                    <Image source={images.app_logo} style={externalStyles.login_app_logo} />
 
-                <View style={externalStyles.login_formview}>
-                    {/* unique id */}
-                    <TextInput
-                        style={externalStyles.login_formTextinput}
-                        value={unique_id}
-                        onChangeText={txt => { setUniqueId(txt); }}
-                        placeholderTextColor={colors.black}
-                        placeholder="Unique id"
-                        theme={{
-                            colors: {
-                                primary: colors.textInputColor,
-                            },
-                        }} />
-                    {/* end of unique id */}
+                    <View style={externalStyles.login_formview}>
+                        {/* unique id */}
+                        <TextInput
+                            style={externalStyles.login_formTextinput}
+                            value={unique_id}
+                            onChangeText={txt => { setUniqueId(txt); }}
+                            placeholderTextColor={colors.black}
+                            placeholder="Unique id"
+                            theme={{
+                                colors: {
+                                    primary: colors.textInputColor,
+                                },
+                            }} />
+                        {/* end of unique id */}
 
-                    {/* password */}
-                    <TextInput
-                        style={externalStyles.login_formTextinput}
-                        value={password}
-                        onChangeText={txt => { setPassword(txt); }}
-                        placeholderTextColor={colors.black}
-                        placeholder="Password"
-                        secureTextEntry={true}
-                        theme={{
-                            colors: {
-                                primary: colors.textInputColor,
-                                secondary: colors.textInputColor,
-                            },
-                        }} />
-                    {/* end of password */}
+                        {/* password */}
+                        <TextInput
+                            style={externalStyles.login_formTextinput}
+                            value={password}
+                            onChangeText={txt => { setPassword(txt); }}
+                            placeholderTextColor={colors.black}
+                            placeholder="Password"
+                            secureTextEntry={true}
+                            theme={{
+                                colors: {
+                                    primary: colors.textInputColor,
+                                    secondary: colors.textInputColor,
+                                },
+                            }} />
+                        {/* end of password */}
 
-                    {/* submit button */}
-                    <Pressable onPress={() => onSubmit()} style={externalStyles.login_submitbutton}>
-                        <Text style={externalStyles.login_submitbuttonText}>Login</Text>
-                    </Pressable>
-                    {/* end of submit button */}
+                        {/* submit button */}
+                        <Pressable onPress={() => onSubmit()} style={externalStyles.login_submitbutton}>
+                            <Text style={externalStyles.login_submitbuttonText}>Login</Text>
+                        </Pressable>
+                        {/* end of submit button */}
 
-                </View>
+                    </View>
 
-            </ImageBackground>
+                </ImageBackground>
+            }
         </View>
     );
 };

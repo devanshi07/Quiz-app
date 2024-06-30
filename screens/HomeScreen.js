@@ -101,7 +101,7 @@ export default function HomeScreen({ navigation }) {
                                 quiz_active: currentTime.isSameOrAfter(quizDateTime)
                             });
                         }
-                        setActiveQuizList(activeQuizList);
+                        setActiveQuizList([...activeQuizList]);
                         CustomConsole(activeQuizList);
                         setLoading(false);
                     }
@@ -150,10 +150,6 @@ export default function HomeScreen({ navigation }) {
 
             {loading ? progressView(loading) :
                 <>
-
-
-
-
                     {/* banners view */}
                     <View style={externalStyles.banner_main_view}>
                         <View style={externalStyles.banner_sub_view}>

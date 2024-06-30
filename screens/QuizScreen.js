@@ -11,6 +11,7 @@ import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSe
 import { SF, SH, SW } from "../common/dimensions";
 import { APP_NAME } from "../common/string";
 import * as Progress from 'react-native-progress';
+import WebView from "react-native-webview";
 
 export default function QuizScreen({ navigation, route }) {
 
@@ -175,16 +176,16 @@ export default function QuizScreen({ navigation, route }) {
             myHeaders.append("Content-Type", "application/json");
             myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
-            let raw ;
+            let raw;
             if (answerArr.length == 0) {
-                 raw = JSON.stringify({
+                raw = JSON.stringify({
                     "quiz_id": paramItem?.quiz_id,
                     "start_time": startTime,
                     "end_time": formatTime(timeLeft)
-                    
+
                 });
             } else {
-                 raw = JSON.stringify({
+                raw = JSON.stringify({
                     "quiz_id": paramItem?.quiz_id,
                     "start_time": startTime,
                     "end_time": formatTime(timeLeft),
@@ -341,6 +342,12 @@ export default function QuizScreen({ navigation, route }) {
         }
     };
 
+    const injectedJavaScript = `
+    document.querySelectorAll('video').forEach(video => {
+      video.autoplay = false;
+      video.pause();
+    });
+  `;
     return (
         <View style={externalStyles.coloredContainer}>
 
@@ -410,6 +417,17 @@ export default function QuizScreen({ navigation, route }) {
                                 <View style={{ borderWidth: 1, borderColor: colors.themeGreenColor, borderRadius: 11, paddingVertical: SH(15), paddingHorizontal: SW(21), marginTop: SH(-15) }}>
                                     <Text style={{ color: colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{questionList[currentQuestion]?.question_text}</Text>
                                 </View>
+                                {questionList[currentQuestion]?.question_media != "" ?
+                                    <WebView
+                                        source={{ uri: questionList[currentQuestion]?.question_media }}
+                                        // source={{ uri: "https://www.computerhope.com/jargon/m/example.mp3" }}
+                                        style={{ height: 200, marginTop: 10 }}
+                                        mediaPlaybackRequiresUserAction={true}
+                                        allowsInlineMediaPlayback={false}
+                                        injectedJavaScript={injectedJavaScript}
+                                    />
+                                    : null
+                                }
                                 {/* question */}
 
                                 {/* option view */}
