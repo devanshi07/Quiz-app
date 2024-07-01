@@ -260,7 +260,9 @@ export default function QuizScreen({ navigation, route }) {
 
     const handleOptionPress = (index, selectedOption, question_id) => {
         if (!isAnswered) {
-            setCorrectAns(correctAns + 1);
+            if (selectedOption.is_currect === 1) {
+                setCorrectAns(correctAns + 1);
+            }
             setSelectedOption(index);
             setIsAnswered(true);
             setAttemptQuestion(attemptQuestion + 1);

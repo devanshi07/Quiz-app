@@ -77,7 +77,7 @@ export default function ConsistResultsScreen({ navigation }) {
 
             {loading ? progressView(loading) :
                 <ScrollView>
-                    <View style={{ backgroundColor: colors.themeColor, borderRadius: 360, width: 450, height: 450, alignItems: "center", top: -170, alignSelf: "center" }}>
+                    <View style={{ backgroundColor: colors.themeColor, borderRadius: 360, height: 450, alignItems: "center", top: -170, alignSelf: "center" }}>
 
                         {/* sub header view */}
                         <View style={{ backgroundColor: colors.white, borderRadius: 360, width: 435, height: 435, alignItems: "center", justifyContent: "center" }}>
@@ -91,7 +91,7 @@ export default function ConsistResultsScreen({ navigation }) {
                         {/* rankers view */}
                         <View style={{ flexDirection: "row", alignItems: "center", marginTop: -30 }}>
 
-                            <View style={{ alignItems: "center" }}>
+                            <View style={{ alignItems: "center", flex: 1 }}>
                                 <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
                                     <Image source={{ uri: performerList?.find(element => element.rank == 2)?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                                 </View>
@@ -105,7 +105,7 @@ export default function ConsistResultsScreen({ navigation }) {
 
                             <View style={{ width: SW(15) }} />
 
-                            <View style={{ alignItems: "center" }}>
+                            <View style={{ alignItems: "center", flex: 1 }}>
                                 <View style={{ backgroundColor: "#D9D9D9", width: SH(128), height: SH(128), borderRadius: 360, marginTop: -40 }}>
                                     <Image source={{ uri: performerList?.find(element => element.rank == 1)?.avatar }} style={{ width: SH(128), height: SH(128), borderRadius: 360 }} />
                                 </View>
@@ -119,7 +119,7 @@ export default function ConsistResultsScreen({ navigation }) {
 
                             <View style={{ width: SW(15) }} />
 
-                            <View style={{ alignItems: "center" }}>
+                            <View style={{ alignItems: "center", flex: 1 }}>
                                 <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
                                     <Image source={{ uri: performerList?.find(element => element.rank == 3)?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                                 </View>
