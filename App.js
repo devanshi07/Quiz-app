@@ -436,7 +436,7 @@ function App() {
                     <Image source={images.consistent_icon}
                       style={externalStyles.drawerItemIcon} resizeMode="contain" />
                   </View>
-                  <Text style={externalStyles.drawerItemText}>Consistency wise Results</Text>
+                  <Text style={externalStyles.drawerItemText}>Taluka wise Toppers</Text>
                 </View>
               </Pressable>
 

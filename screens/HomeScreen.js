@@ -2,7 +2,7 @@ import { DrawerActions, useIsFocused, } from "@react-navigation/native";
 import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import { CustomConsole, getRegularFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
+import { ACTIVE_QUIZ, ATTEND_QUIZ, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { DESIGNATION_ID, TOKEN, getSession, } from "../common/LocalStorage";
 import moment from "moment";
@@ -132,10 +132,48 @@ export default function HomeScreen({ navigation }) {
         <View style={externalStyles.home_quiz_render_item_mainview}>
             <Text style={externalStyles.home_quiz_render_item_title}>{item.quiz_title}</Text>
 
-            <Pressable onPress={() => {
-                navigation.navigate("QuizScreen", {
-                    paramItem: item,
-                });
+            <Pressable onPress={async () => {
+                try {
+                    const token = await getSession(TOKEN);
+                    const myHeaders = new Headers();
+                    myHeaders.append("Content-Type", "application/json");
+                    myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
+                    const raw = JSON.stringify({
+                        "quiz_id": item.quiz_id
+                    });
+
+                    const requestOptions = {
+                        method: "POST",
+                        headers: myHeaders,
+                        body: raw,
+                        redirect: "follow"
+                    };
+
+                    CustomConsole("API: " + ATTEND_QUIZ);
+                    CustomConsole(raw);
+                    setLoading(true);
+                    fetch(ATTEND_QUIZ, requestOptions)
+                        .then((response) => response.json())
+                        .then((json) => {
+                            CustomConsole(json);
+                            if (json.status == 1) {
+                                navigation.navigate("QuizScreen", {
+                                    paramItem: item,
+                                });
+                            } else {
+                                setLoading(false);
+                            }
+                        })
+                        .catch((error1) => {
+                            setLoading(false);
+                            CustomConsole("Quiz Attendance Api Error: " + error1);
+                        });
+
+                } catch (error) {
+                    setLoading(false);
+                    CustomConsole("Quiz Attendance Api Exception: " + error);
+                }
             }}
                 disabled={item.quiz_active ? false : true}
                 style={item.quiz_active ? externalStyles.home_quiz_render_item_button_active : externalStyles.home_quiz_render_item_button}>

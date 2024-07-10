@@ -63,6 +63,23 @@ export default function ConsistResultsScreen({ navigation }) {
         }
     }
 
+    // toppers item view
+    const renderTopperItem = ({ item, index }) => (
+        <View style={{ flexDirection: "row", backgroundColor: colors.themeYellowColor, height: 100, marginHorizontal: 40, borderRadius: 24, justifyContent: "center", }}>
+            <View style={{ padding: 10, borderRightColor: colors.white, borderRightWidth: 5, borderTopRightRadius: 100, borderBottomRightRadius: 100, justifyContent: "center" }}>
+                <Image source={{ uri: item.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
+            </View>
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", marginHorizontal: SW(10) }}>
+                <View style={{ flex: 1, justifyContent: "center" }}>
+                    <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.white }}>{item.name}</Text>
+                </View>
+                <View style={{ backgroundColor: colors.white, borderRadius: 360, alignSelf: "center", width: SH(41), height: SH(41), alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.themeYellowColor }}>{item.rank}</Text>
+                </View>
+            </View>
+        </View>
+    );
+
     return (
         <View style={externalStyles.container}>
 
@@ -71,7 +88,7 @@ export default function ConsistResultsScreen({ navigation }) {
                 <Pressable style={{ padding: 10 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
                     <Image source={images.drawer_menu} style={{ height: SH(40), width: SH(40), resizeMode: "contain", tintColor: colors.black }} />
                 </Pressable>
-                <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Consistency wise Results"}</Text>
+                <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Taluka wise Toppers"}</Text>
             </View>
             {/* end of header view */}
 
@@ -82,9 +99,9 @@ export default function ConsistResultsScreen({ navigation }) {
                         {/* sub header view */}
                         <View style={{ backgroundColor: colors.white, borderRadius: 360, width: 435, height: 435, alignItems: "center", justifyContent: "center" }}>
                             <View style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), marginTop: 100 }}>
-                                <Text style={{ color: colors.white, fontSize: SF(30), fontFamily: getPopBoldFont() }}>{"Consistency"}</Text>
+                                <Text style={{ color: colors.white, fontSize: SF(30), fontFamily: getPopBoldFont() }}>{"Taluka wise Toppers"}</Text>
                             </View>
-                            <Text style={{ color: '#292929', fontSize: SF(22), fontFamily: getPopSemiBoldFont(), marginTop: SH(31) }}>{"Top 3 Results"}</Text>
+                            <Text style={{ color: '#292929', fontSize: SF(22), fontFamily: getPopSemiBoldFont(), marginTop: SH(31) }}>{"Top 10 Results"}</Text>
                         </View>
                         {/* end of sub header view */}
 
@@ -132,11 +149,23 @@ export default function ConsistResultsScreen({ navigation }) {
                             </View>
                         </View>
                         {/* <Text style={{ color: '#292929', fontSize: SF(22), fontFamily: getPopSemiBoldFont(), marginTop: SH(31) }}>{"No one found"}</Text> */}
-
                         {/* end of rankers view */}
 
                     </View>
+                    {/* other toppers */}
+                    <FlatList
+                        data={performerList.slice(3, performerList.length)}
+                        ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
+                        renderItem={renderTopperItem}
+                        ListFooterComponent={() => {
+                            return (
+                                <View style={{ height: 50 }} />
+                            );
+                        }}
+                    />
+                    {/* end of other toppers */}
                 </ScrollView>
+
             }
         </View>
     );

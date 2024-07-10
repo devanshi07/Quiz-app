@@ -64,6 +64,23 @@ export default function LeaderBoardScreen({ navigation }) {
         }
     }
 
+     // toppers item view
+     const renderTopperItem = ({ item, index }) => (
+        <View style={{ flexDirection: "row", backgroundColor: colors.themeYellowColor, height: 100, marginHorizontal: 40, borderRadius: 24, justifyContent: "center", }}>
+            <View style={{ padding: 10, borderRightColor: colors.white, borderRightWidth: 5, borderTopRightRadius: 100, borderBottomRightRadius: 100, justifyContent: "center" }}>
+                <Image source={{ uri: item.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
+            </View>
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", marginHorizontal: SW(10) }}>
+                <View style={{ flex: 1, justifyContent: "center" }}>
+                    <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.white }}>{item.name}</Text>
+                </View>
+                <View style={{ backgroundColor: colors.white, borderRadius: 360, alignSelf: "center", width: SH(41), height: SH(41), alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.themeYellowColor }}>{item.rank}</Text>
+                </View>
+            </View>
+        </View>
+    );
+
     return (
         <View style={externalStyles.container}>
 
@@ -137,6 +154,18 @@ export default function LeaderBoardScreen({ navigation }) {
                         {/* end of rankers view */}
 
                     </View>
+                    {/* other toppers */}
+                    <FlatList
+                        data={performerList.slice(3, performerList.length)}
+                        ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
+                        renderItem={renderTopperItem}
+                        ListFooterComponent={() => {
+                            return (
+                                <View style={{ height: 50 }} />
+                            );
+                        }}
+                    />
+                    {/* end of other toppers */}
                 </ScrollView>
             }
 

@@ -5,7 +5,7 @@ import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, coloredProgressView, getMediumFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, LOGIN, QUIZ_DETAILS, QUIZ_SUBMIT, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
+import { ACTIVE_QUIZ, LOGIN, QUIZ_DETAILS, QUIZ_SUBMIT, SLIDER_DETAILS, SLIDER_LIST, TOTAL_QUIZ_ATTENDANCE } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
@@ -39,6 +39,7 @@ export default function QuizScreen({ navigation, route }) {
     const [endTime, setEndTime] = useState('');
     const [timerRunning, setTimerRunning] = useState(false);
     const [typeModal, setTypeModal] = useState(false);
+    const [totalParticipants, setTotalParticipants] = useState(0);
 
     // modal hide/show
     const showTypeModal = (text) => {
@@ -107,6 +108,26 @@ export default function QuizScreen({ navigation, route }) {
         // }, 1000); // 15 min = 1000 * 15
         return () => clearTimeout(timer);
     }, [timeLeft, timerRunning]);
+
+    // total attendations of quiz
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                CustomConsole("interval called===>")
+                // const response = await fetch(TOTAL_QUIZ_ATTENDANCE);
+                // const result = await response.json();
+                setTotalParticipants(prev=> prev + 1);
+            } catch (err) {
+                setError(err);
+            }
+        };
+
+        fetchData(); // Initial fetch
+
+        const interval = setInterval(fetchData, 5000); // Fetch every 5 seconds
+
+        return () => clearInterval(interval); // Cleanup interval on component unmount
+    }, []);
 
     useEffect(() => {
         if (focused) {
@@ -358,7 +379,7 @@ export default function QuizScreen({ navigation, route }) {
                 <Pressable style={externalStyles.headerIconView} onPress={() => navigation.goBack()}>
                     <Image source={images.back_arrow} style={externalStyles.headerIcon} />
                 </Pressable>
-                <Text style={externalStyles.headerText}>{"paramItem.quiz_title"}</Text>
+                <Text style={externalStyles.headerText}>{paramItem?.quiz_title}</Text>
             </View>
             {/* end of header view */}
 
@@ -374,11 +395,20 @@ export default function QuizScreen({ navigation, route }) {
                             {/* end of progress bar view */}
 
                             {/* timer view */}
-                            <View style={{ flexDirection: "row", alignItems: "center", alignSelf: "flex-end" }}>
-                                <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14) }}>Timer</Text>
-                                <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>
-                                    <Image source={images.timer_icon} style={{ height: SH(20), width: SH(20), resizeMode: "contain" }} />
-                                    <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{formatTime(timeLeft)}</Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14)  }}>Participants</Text>
+                                    <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>
+                                        <Image source={images.fill_user} style={{ height: SH(20), width: SH(20), resizeMode: "contain" }} />
+                                        <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{totalParticipants}</Text>
+                                    </View>
+                                </View>
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14) }}>Timer</Text>
+                                    <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>
+                                        <Image source={images.timer_icon} style={{ height: SH(20), width: SH(20), resizeMode: "contain" }} />
+                                        <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{formatTime(timeLeft)}</Text>
+                                    </View>
                                 </View>
                             </View>
                             {/* end of timer view */}
