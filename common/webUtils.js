@@ -14,11 +14,11 @@ export const QUIZ_SUBMIT = BASE_URL + 'quiz/submit';
 export const PERSONAL_RESULT = BASE_URL + 'quiz/personal-result'; 
 export const TOP_WINNERS = BASE_URL + 'quiz/top-winners?designation_id=';
 
-export const ATTEND_QUIZ = BASE_URL + 'quiz/top-winners?designation_id=';
-export const TOTAL_QUIZ_ATTENDANCE = BASE_URL + 'quiz/top-winners?designation_id=';
+export const ATTEND_QUIZ = BASE_URL + 'quiz/attendance';
+export const TOTAL_QUIZ_ATTENDANCE = BASE_URL + 'quiz/attendance?quiz_id=';
 
-export const TOP_WINNERS_PERFORMANCE = BASE_URL + 'quiz/top-winners-performance'; 
-export const TOP_WINNERS_CONSISTENT = BASE_URL + 'quiz/top-winners-consistent'; 
+export const TOP_WINNERS_PERFORMANCE = BASE_URL + 'quiz/top-winners-performance?designation_id='; 
+export const TOP_WINNERS_CONSISTENT = BASE_URL + 'quiz/top-winners-consistent-city'; 
 
 export const FEEDBACK = BASE_URL + 'feedback'; 
 

@@ -98,6 +98,8 @@ export default function MyResultsScreen({ navigation }) {
                         <Text style={{ color: colors.white, fontSize: SF(23), fontFamily: getSemiBoldFont() }}>{"Quiz's Results"}</Text>
                     </View>}
                     ItemSeparatorComponent={() => (<View style={{ height: SH(22) }} />)}
+                    ListFooterComponent={() => (<View style={{ height: SH(20) }} />)}
+                    showsVerticalScrollIndicator={false}
                     renderItem={renderResultItem}
                 />
             }

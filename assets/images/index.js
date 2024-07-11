@@ -1,6 +1,8 @@
 const images = {
     app_logo: require('./app_logo.png'),
     back_arrow: require('./back_arrow.png'),
+    up_arrow: require('./up_arrow.png'),
+    down_arrow: require('./down_arrow.png'),
     bottom_tab_alert: require('./bottom_tab_alert.png'),
     bottom_tab_home: require('./bottom_tab_home.png'),
     bottom_tab_plus: require('./bottom_tab_plus.png'),
@@ -25,5 +27,6 @@ const images = {
     choose_image: require('./choose_image.png'),
     success_gif: require('./success_gif.gif'),
     alert_blink: require('./alert_blink.gif'),
+    location: require('./location.png'),
 };
 export default images;

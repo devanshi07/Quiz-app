@@ -1,4 +1,4 @@
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { Alert, Button, Dimensions, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
@@ -6,7 +6,7 @@ import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, coloredProgressView, getMediumFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
 import { ACTIVE_QUIZ, LOGIN, QUIZ_DETAILS, QUIZ_SUBMIT, SLIDER_DETAILS, SLIDER_LIST, TOTAL_QUIZ_ATTENDANCE } from "../common/webUtils";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
 import { APP_NAME } from "../common/string";
@@ -40,6 +40,7 @@ export default function QuizScreen({ navigation, route }) {
     const [timerRunning, setTimerRunning] = useState(false);
     const [typeModal, setTypeModal] = useState(false);
     const [totalParticipants, setTotalParticipants] = useState(0);
+    const [error, setError] = useState(null);
 
     // modal hide/show
     const showTypeModal = (text) => {
@@ -110,24 +111,79 @@ export default function QuizScreen({ navigation, route }) {
     }, [timeLeft, timerRunning]);
 
     // total attendations of quiz
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                CustomConsole("interval called===>")
-                // const response = await fetch(TOTAL_QUIZ_ATTENDANCE);
-                // const result = await response.json();
-                setTotalParticipants(prev=> prev + 1);
-            } catch (err) {
-                setError(err);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const token = await getSession(TOKEN);
+    //             const myHeaders = new Headers();
+    //             myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
-        fetchData(); // Initial fetch
+    //             const requestOptions = {
+    //                 method: "GET",
+    //                 headers: myHeaders,
+    //                 redirect: "follow"
+    //             };
 
-        const interval = setInterval(fetchData, 5000); // Fetch every 5 seconds
+    //             CustomConsole("interval called===>" + TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id);
+    //             const response = await fetch(TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id, requestOptions);
+    //             const result = await response.json();
+    //             CustomConsole(result);
+    //             // setTotalParticipants(prev => prev + 1); 
+    //             if (result.status == 1) {
+    //                 setTotalParticipants(result.total_attendations);
+    //             }
+    //         } catch (err) {
+    //             setError(err);
+    //         }
+    //     };
 
-        return () => clearInterval(interval); // Cleanup interval on component unmount
-    }, []);
+    //     fetchData(); // Initial fetch
+
+    //     const interval = setInterval(fetchData, 10000); // Fetch every 5 seconds
+
+    //     return () => clearInterval(interval); // Cleanup interval on component unmount
+    // }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            let interval;
+
+            const fetchData = async () => {
+                try {
+                    const token = await getSession(TOKEN);
+                    const myHeaders = new Headers();
+                    myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
+                    const requestOptions = {
+                        method: "GET",
+                        headers: myHeaders,
+                        redirect: "follow"
+                    };
+
+                    CustomConsole("interval called===>" + TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id);
+                    const response = await fetch(TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id, requestOptions);
+                    const result = await response.json();
+                    CustomConsole(result);
+                    // setTotalParticipants(prev => prev + 1); 
+                    if (result.status == 1) {
+                        setTotalParticipants(result.total_attendations);
+                    }
+                } catch (err) {
+                    setError(err);
+                }
+            };
+
+            fetchData(); // Initial fetch
+
+            interval = setInterval(fetchData, 10000); // Fetch every 10 seconds
+
+            return () => {
+                if (interval) {
+                    clearInterval(interval); // Cleanup interval on screen blur
+                }
+            };
+        }, [paramItem])
+    );
 
     useEffect(() => {
         if (focused) {
@@ -397,7 +453,7 @@ export default function QuizScreen({ navigation, route }) {
                             {/* timer view */}
                             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14)  }}>Participants</Text>
+                                    <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14) }}>Participants</Text>
                                     <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>
                                         <Image source={images.fill_user} style={{ height: SH(20), width: SH(20), resizeMode: "contain" }} />
                                         <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{totalParticipants}</Text>

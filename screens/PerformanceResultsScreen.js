@@ -27,6 +27,8 @@ export default function PerformanceResultsScreen({ navigation }) {
 
         try {
             setLoading(true);
+            const designation_id = await getSession(DESIGNATION_ID);
+
             const token = await getSession(TOKEN);
             const myHeaders = new Headers();
             myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
@@ -37,7 +39,9 @@ export default function PerformanceResultsScreen({ navigation }) {
                 redirect: "follow"
             };
 
-            fetch(TOP_WINNERS_PERFORMANCE, requestOptions)
+            CustomConsole(TOP_WINNERS_PERFORMANCE + designation_id);
+
+            fetch(TOP_WINNERS_PERFORMANCE + designation_id, requestOptions)
                 .then((response) => response.json())
                 .then((json) => {
                     CustomConsole(json);
@@ -79,7 +83,7 @@ export default function PerformanceResultsScreen({ navigation }) {
             </View>
         </View>
     );
-    
+
     return (
         <View style={externalStyles.container}>
 
@@ -153,8 +157,8 @@ export default function PerformanceResultsScreen({ navigation }) {
                         {/* end of rankers view */}
 
                     </View>
-                     {/* other toppers */}
-                     <FlatList
+                    {/* other toppers */}
+                    <FlatList
                         data={performerList.slice(3, performerList.length)}
                         ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
                         renderItem={renderTopperItem}
