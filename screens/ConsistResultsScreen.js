@@ -4,7 +4,7 @@ import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
-import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
+import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopSemiBoldFont, getRegularFont, getSemiBoldFont, progressView } from "../common/utils";
 import { ACTIVE_QUIZ, LOGIN, SLIDER_DETAILS, SLIDER_LIST, TOP_WINNERS, TOP_WINNERS_CONSISTENT } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
@@ -47,9 +47,13 @@ export default function ConsistResultsScreen({ navigation }) {
 
                     if (json.status == 1) {
                         // success response
-                        setPerformerList(json.top_winners);
-                        // setActiveTaluka(json.top_winners[0].city)
-                        setLoading(false);
+                        if (json.top_winners.length != 0) {
+                            setPerformerList(json.top_winners);
+                            setActiveTaluka(json.top_winners[0].city)
+                            setLoading(false);
+                        } else {
+                            setLoading(false);
+                        }
                     }
                     else {
                         // other reponse status
@@ -120,17 +124,22 @@ export default function ConsistResultsScreen({ navigation }) {
             {/* end of header view */}
 
             {loading ? progressView(loading) :
-                <FlatList
-                    data={performerList}
-                    style={{ marginTop: 30 }}
-                    ItemSeparatorComponent={() => (<View style={{ height: SH(20) }} />)}
-                    renderItem={renderTopperItem}
-                    ListFooterComponent={() => {
-                        return (
-                            <View style={{ height: 50 }} />
-                        );
-                    }}
-                />
+                performerList.length == 0 ?
+                    <View style={{ width: "100%", alignItems: "center", flex: 1, justifyContent: "center" }}>
+                        <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(25), }}>No performer found</Text>
+                    </View>
+                    : <FlatList
+                        data={performerList}
+                        style={{ marginTop: 30 }}
+                        ItemSeparatorComponent={() => (<View style={{ height: SH(20) }} />)}
+                        renderItem={renderTopperItem}
+                        ListFooterComponent={() => {
+                            return (
+                                <View style={{ height: 50 }} />
+                            );
+                        }}
+
+                    />
             }
             {/* {loading ? progressView(loading) :
                 <ScrollView>

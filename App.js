@@ -411,7 +411,7 @@ function App() {
                     <Image source={images.drawer_leaderboard}
                       style={externalStyles.drawerItemIcon} resizeMode="contain" />
                   </View>
-                  <Text style={externalStyles.drawerItemText}>LeaderBoard</Text>
+                  <Text style={externalStyles.drawerItemText}>Leaderboard</Text>
                 </View>
               </Pressable>
 
