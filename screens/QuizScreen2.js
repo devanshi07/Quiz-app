@@ -1,5 +1,5 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { Alert, Button, Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, Button, Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
@@ -73,7 +73,7 @@ const questions = [
 
 export default function QuizScreen2({ navigation, route }) {
 
-    const paramItem = route.params.paramItem
+    const paramItem = route.params?.paramItem
 
     const [loading, setLoading] = useState(false);
     const [totalQuestions, setTotalQuestion] = useState(0);
@@ -156,7 +156,7 @@ export default function QuizScreen2({ navigation, route }) {
     };
 
     const handleNextPress = (selectedOption, question_id) => {
-        const currentQuestion = questionList[currentQuestionIndex];
+        const currentQuestion = questions[currentQuestionIndex];
         if (currentQuestion.question_options[selectedOption].is_currect === 0) {
             setShowExplanation(true);
             setAttemptQuestion(attemptQuestion + 1);
@@ -177,7 +177,7 @@ export default function QuizScreen2({ navigation, route }) {
 
             setShowExplanation(false);
             setSelectedOption(null);
-            if (currentQuestionIndex < questionList.length - 1) {
+            if (currentQuestionIndex < questions.length - 1) {
                 setCurrentQuestionIndex(currentQuestionIndex + 1);
             } else {
                 // Quiz end
@@ -189,7 +189,7 @@ export default function QuizScreen2({ navigation, route }) {
     const handleExplanationAcknowledged = () => {
         setShowExplanation(false);
         setSelectedOption(null);
-        if (currentQuestionIndex < questionList.length - 1) {
+        if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
             // Quiz end
@@ -199,7 +199,7 @@ export default function QuizScreen2({ navigation, route }) {
 
     const getOptionStyle = (index) => {
         if (selectedOption === index) {
-            return questionList[currentQuestionIndex].question_options[index].is_currect === 1
+            return questions[currentQuestionIndex].question_options[index].is_currect === 1
                 ? styles.correctOption
                 : styles.wrongOption;
         }
@@ -215,18 +215,44 @@ export default function QuizScreen2({ navigation, route }) {
         return styles.optionText;
     };
 
+    const animation = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(animation, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+        }).start();
+    }, [questions]);
+
     return (
         <View style={styles.container}>
             <Text style={styles.question}>{questions[currentQuestionIndex].question_text}</Text>
-            {questions[currentQuestionIndex].question_options.map((option, index) => (
-                <TouchableOpacity
-                    key={option.option_id}
-                    style={getOptionStyle(index)}
-                    onPress={() => handleOptionPress(index)}
-                >
-                    <Text style={getOptionTextStyle(index)}>{option.option_text}</Text>
-                </TouchableOpacity>
-            ))}
+            {questions[currentQuestionIndex].question_options.map((option, index) => {
+                // const scale = animation.interpolate({
+                //     inputRange: [0, 1],
+                //     outputRange: [0.5, 1],
+                // });
+                const translateX = animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [500, 0], // Start from 500 (off-screen right) to 0 (on-screen)
+                  });
+              
+                return (
+                    <Animated.View style={{ transform: [{ translateX }] }}>
+
+                        <TouchableOpacity
+                            key={option.option_id}
+                            style={getOptionStyle(index)}
+                            onPress={() => handleOptionPress(index)}
+                        >
+                            <Text style={getOptionTextStyle(index)}>{option.option_text}</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+
+                );
+            }
+            )}
             <Button
                 title="Next"
                 onPress={handleNextPress(selectedOption, questions[currentQuestionIndex].question_id)}

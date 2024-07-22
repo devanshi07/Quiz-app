@@ -28,5 +28,10 @@ const images = {
     success_gif: require('./success_gif.gif'),
     alert_blink: require('./alert_blink.gif'),
     location: require('./location.png'),
+    study_document: require('./study_document.png'),
+    document_file: require('./document_file.png'),
+    download: require('./download.png'),
+    video_image: require('./video_image.png'),
+    right_arrow: require('./right_arrow.png'),
 };
 export default images;

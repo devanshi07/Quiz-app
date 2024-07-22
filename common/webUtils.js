@@ -20,6 +20,8 @@ export const TOTAL_QUIZ_ATTENDANCE = BASE_URL + 'quiz/attendance?quiz_id=';
 export const TOP_WINNERS_PERFORMANCE = BASE_URL + 'quiz/top-winners-performance?designation_id='; 
 export const TOP_WINNERS_CONSISTENT = BASE_URL + 'quiz/top-winners-consistent-city'; 
 
+export const STUDY_BANK = BASE_URL + 'quiz/study-banks?designation_id='; 
+
 export const FEEDBACK = BASE_URL + 'feedback'; 
 
 export const GET_PROFILE = BASE_URL + 'profile'; 

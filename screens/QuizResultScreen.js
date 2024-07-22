@@ -76,7 +76,7 @@ export default function QuizResultScreen({ navigation, route }) {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }, { width: SH(85), height: SH(85), borderRadius: 360, backgroundColor: colors.themeColor, zIndex: 1 }]}>
-                                    <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(30), marginLeft: SW(19.19) }}>{get_score}</Text>
+                                    <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(30), marginLeft: SW(19.19) }}>{parseFloat(get_score).toFixed(1)}</Text>
                                 </View>
                             </View>
                             <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(35), textAlign: "center", textAlignVertical: "center", marginHorizontal: SH(5), marginTop: 5 }}>/</Text>

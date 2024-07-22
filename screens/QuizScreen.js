@@ -12,6 +12,7 @@ import { SF, SH, SW } from "../common/dimensions";
 import { APP_NAME } from "../common/string";
 import * as Progress from 'react-native-progress';
 import WebView from "react-native-webview";
+import * as Animatable from 'react-native-animatable'
 
 export default function QuizScreen({ navigation, route }) {
 
@@ -41,6 +42,8 @@ export default function QuizScreen({ navigation, route }) {
     const [typeModal, setTypeModal] = useState(false);
     const [totalParticipants, setTotalParticipants] = useState(0);
     const [error, setError] = useState(null);
+    const animatableRef = useRef(null);
+    const animatableRef2 = useRef(null);
 
     // modal hide/show
     const showTypeModal = (text) => {
@@ -388,6 +391,12 @@ export default function QuizScreen({ navigation, route }) {
 
     // handle next button press
     const handleNext = () => {
+        if (animatableRef.current) {
+            animatableRef.current.animate('zoomIn', 1000, 300);
+        }
+        if (animatableRef2.current) {
+            animatableRef2.current.animate('slideInRight', 1000, 300);
+        }
         setIsAnswered(false);
         if (currentQuestion < questionList.length - 1) {
 
@@ -502,9 +511,12 @@ export default function QuizScreen({ navigation, route }) {
                                 {/* end of question no view */}
 
                                 {/* question view */}
-                                <View style={{ borderWidth: 1, borderColor: colors.themeGreenColor, borderRadius: 11, paddingVertical: SH(15), paddingHorizontal: SW(21), marginTop: SH(-15) }}>
+                                <Animatable.View ref={animatableRef}
+                                    animation={'zoomIn'}
+                                    duration={1000}
+                                    delay={300} style={{ borderWidth: 1, borderColor: colors.themeGreenColor, borderRadius: 11, paddingVertical: SH(15), paddingHorizontal: SW(21), marginTop: SH(-15) }}>
                                     <Text style={{ color: colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{questionList[currentQuestion]?.question_text}</Text>
-                                </View>
+                                </Animatable.View>
                                 {questionList[currentQuestion]?.question_media != "" ?
                                     <WebView
                                         source={{ uri: questionList[currentQuestion]?.question_media }}
@@ -519,7 +531,10 @@ export default function QuizScreen({ navigation, route }) {
                                 {/* question */}
 
                                 {/* option view */}
-                                <View style={{ marginTop: SH(39) }}>
+                                <Animatable.View ref={animatableRef2}
+                                    animation={'slideInRight'}
+                                    duration={1000}
+                                    delay={300} style={{ marginTop: SH(39) }}>
 
                                     {questionList[currentQuestion]?.question_options?.map((option, index) => (
                                         // <Pressable
@@ -537,7 +552,7 @@ export default function QuizScreen({ navigation, route }) {
                                         </Pressable>
                                     ))}
 
-                                </View>
+                                </Animatable.View>
                                 {/* end of option view */}
 
                                 {getExplanation()}

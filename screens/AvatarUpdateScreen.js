@@ -10,6 +10,7 @@ import { SF, SH, SW } from "../common/dimensions";
 import { colors } from "../common/color";
 import images from "../assets/images";
 import { launchCamera, launchImageLibrary, ImagePicker } from 'react-native-image-picker';
+import * as Animatable from 'react-native-animatable'
 
 export default function AvatarUpdateScreen({ navigation, route }) {
 
@@ -97,20 +98,30 @@ export default function AvatarUpdateScreen({ navigation, route }) {
     const renderQuizItem = ({ item, index }) => {
         if (item.plusImage) {
             return (
-                <Pressable onPress={openImagePicker}
-                    style={{ alignItems: "center", borderRadius: 360, borderWidth: imageUploadPath != null ? 2 : 1, height: SH(130), width: SH(130), justifyContent: "center", margin: SH(20), opacity: imageUploadPath != null ? 0.5 : 1 }}>
-                    {imageUploadPath != null ?
-                        <Image source={{ uri: image }} style={{ height: SH(110), width: SH(110), resizeMode: "cover", borderRadius: 360, }} />
-                        :
-                        <>
-                            <Image source={images.choose_image} style={{ width: SH(50), height: SH(50), resizeMode: "contain" }} />
-                            <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(15), textAlign: "center" }}>{"Choose\nAvatar"}</Text>
-                        </>
-                    }
-                </Pressable>
+                <Animatable.View
+                    animation={'zoomIn'}
+                    duration={1000}
+                    delay={index * 300}>
+                    <Pressable onPress={openImagePicker}
+                        style={{ alignItems: "center", borderRadius: 360, borderWidth: imageUploadPath != null ? 2 : 1, height: SH(130), width: SH(130), justifyContent: "center", margin: SH(20), opacity: imageUploadPath != null ? 0.5 : 1 }}>
+                        {imageUploadPath != null ?
+                            <Image source={{ uri: image }} style={{ height: SH(110), width: SH(110), resizeMode: "cover", borderRadius: 360, }} />
+                            :
+                            <>
+                                <Image source={images.choose_image} style={{ width: SH(50), height: SH(50), resizeMode: "contain" }} />
+                                <Text style={{ color: colors.black, fontFamily: getRegularFont(), fontSize: SF(15), textAlign: "center" }}>{"Choose\nAvatar"}</Text>
+                            </>
+                        }
+                    </Pressable>
+                </Animatable.View>
             );
         } else {
             return (
+                <Animatable.View
+                    animation={'zoomIn'}
+                    duration={1000}
+                    delay={index * 300}>
+
                 <TouchableOpacity onPress={() => {
                     setImage(item.avatar_image);
                     setAvatarId(item.avatar_id);
@@ -118,6 +129,7 @@ export default function AvatarUpdateScreen({ navigation, route }) {
                     style={{ margin: SH(20), borderWidth: image == item.avatar_image ? 3 : 0, borderRadius: 360, opacity: image == item.avatar_image ? 0.5 : 1 }}>
                     <Image source={{ uri: item.avatar_image }} style={{ height: SH(120), width: SH(120), resizeMode: "cover", borderRadius: 360, }} />
                 </TouchableOpacity>
+                    </Animatable.View>
             );
         }
     }

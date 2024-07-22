@@ -9,6 +9,7 @@ import { ACTIVE_QUIZ, LOGIN, SLIDER_DETAILS, SLIDER_LIST, TOP_WINNERS } from "..
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
+import * as Animatable from 'react-native-animatable'
 
 export default function LeaderBoardScreen({ navigation }) {
 
@@ -64,21 +65,27 @@ export default function LeaderBoardScreen({ navigation }) {
         }
     }
 
-     // toppers item view
-     const renderTopperItem = ({ item, index }) => (
-        <View style={{ flexDirection: "row", backgroundColor: colors.themeYellowColor, height: 100, marginHorizontal: 40, borderRadius: 24, justifyContent: "center", }}>
-            <View style={{ padding: 10, borderRightColor: colors.white, borderRightWidth: 5, borderTopRightRadius: 100, borderBottomRightRadius: 100, justifyContent: "center" }}>
-                <Image source={{ uri: item.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
-            </View>
-            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", marginHorizontal: SW(10) }}>
-                <View style={{ flex: 1, justifyContent: "center" }}>
-                    <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.white }}>{item.name}</Text>
+    // toppers item view
+    const renderTopperItem = ({ item, index }) => (
+        <Animatable.View
+            animation={'slideInRight'}
+            duration={1000}
+            delay={index * 300}
+        >
+            <View style={{ flexDirection: "row", backgroundColor: colors.themeYellowColor, height: 100, marginHorizontal: 40, borderRadius: 24, justifyContent: "center", }}>
+                <View style={{ padding: 10, borderRightColor: colors.white, borderRightWidth: 5, borderTopRightRadius: 100, borderBottomRightRadius: 100, justifyContent: "center" }}>
+                    <Image source={{ uri: item.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                 </View>
-                <View style={{ backgroundColor: colors.white, borderRadius: 360, alignSelf: "center", width: SH(41), height: SH(41), alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.themeYellowColor }}>{item.rank}</Text>
+                <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", marginHorizontal: SW(10) }}>
+                    <View style={{ flex: 1, justifyContent: "center" }}>
+                        <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.white }}>{item.name}</Text>
+                    </View>
+                    <View style={{ backgroundColor: colors.white, borderRadius: 360, alignSelf: "center", width: SH(41), height: SH(41), alignItems: "center", justifyContent: "center" }}>
+                        <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.themeYellowColor }}>{item.rank}</Text>
+                    </View>
                 </View>
             </View>
-        </View>
+        </Animatable.View>
     );
 
     return (
@@ -107,9 +114,12 @@ export default function LeaderBoardScreen({ navigation }) {
                         {/* end of sub header view */}
 
                         {/* rankers view */}
-                        <View style={{ flexDirection: "row", alignItems: "center", marginTop: -30 }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", marginTop: -40 }}>
 
-                            <View style={{ alignItems: "center", flex: 1, }}>
+                            <Animatable.View
+                                animation={'zoomIn'}
+                                duration={1000}
+                                delay={300} style={{ alignItems: "center", flex: 1, }}>
                                 <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
                                     <Image source={{ uri: performerList?.find(element => element.rank == 2)?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                                 </View>
@@ -119,11 +129,14 @@ export default function LeaderBoardScreen({ navigation }) {
                                 <View style={{ backgroundColor: colors.themeGreenColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"2"}</Text>
                                 </View>
-                            </View>
+                            </Animatable.View>
 
                             <View style={{ width: SW(15) }} />
 
-                            <View style={{ alignItems: "center", flex: 1, }}>
+                            <Animatable.View
+                                animation={'zoomIn'}
+                                duration={1000}
+                                delay={300} style={{ alignItems: "center", flex: 1, }}>
                                 <View style={{ backgroundColor: "#D9D9D9", width: SH(128), height: SH(128), borderRadius: 360, marginTop: -40 }}>
                                     <Image source={{ uri: performerList?.find(element => element.rank == 1)?.avatar }} style={{ width: SH(128), height: SH(128), borderRadius: 360 }} />
                                 </View>
@@ -133,11 +146,14 @@ export default function LeaderBoardScreen({ navigation }) {
                                 <View style={{ backgroundColor: colors.themeColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"1"}</Text>
                                 </View>
-                            </View>
+                            </Animatable.View>
 
                             <View style={{ width: SW(15) }} />
 
-                            <View style={{ alignItems: "center", flex: 1, }}>
+                            <Animatable.View
+                                animation={'zoomIn'}
+                                duration={1000}
+                                delay={300} style={{ alignItems: "center", flex: 1, }}>
                                 <View style={{ backgroundColor: "#D9D9D9", width: SH(100), height: SH(100), borderRadius: 360 }}>
                                     <Image source={{ uri: performerList?.find(element => element.rank == 3)?.avatar }} style={{ width: SH(100), height: SH(100), borderRadius: 360 }} />
                                 </View>
@@ -147,7 +163,7 @@ export default function LeaderBoardScreen({ navigation }) {
                                 <View style={{ backgroundColor: colors.themeGreenColor, borderRadius: 18, marginTop: 13, width: SH(35), height: SH(35), alignItems: "center", justifyContent: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(20), fontFamily: getSemiBoldFont(), textAlign: "center" }}>{"3"}</Text>
                                 </View>
-                            </View>
+                            </Animatable.View>
                         </View>
                         {/* <Text style={{ color: '#292929', fontSize: SF(22), fontFamily: getPopSemiBoldFont(), marginTop: SH(31) }}>{"No one found"}</Text> */}
 
@@ -155,7 +171,7 @@ export default function LeaderBoardScreen({ navigation }) {
 
                     </View>
                     {/* other toppers */}
-                    <FlatList
+                    <FlatList style={{marginTop: -10}}
                         data={performerList.slice(3, performerList.length)}
                         ItemSeparatorComponent={() => (<View style={externalStyles.home_active_quiz_list_separator} />)}
                         renderItem={renderTopperItem}

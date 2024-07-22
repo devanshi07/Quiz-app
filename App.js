@@ -49,6 +49,8 @@ import PerformanceResultsScreen from './screens/PerformanceResultsScreen';
 import messaging from '@react-native-firebase/messaging';
 import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
+import StudyBankScreen from './screens/StudyBankScreen';
+import StudyMetrialView from './screens/StudyMetrialView';
 
 // splash screen 
 function SplashScreen() {
@@ -258,6 +260,8 @@ function App() {
                 <HomeStack.Screen name="LeaderBoardScreen1" component={LeaderBoardScreen} />
                 <HomeStack.Screen name="ConsistResultsScreen" component={ConsistResultsScreen} />
                 <HomeStack.Screen name="PerformanceResultsScreen" component={PerformanceResultsScreen} />
+                <HomeStack.Screen name="StudyBankScreen" component={StudyBankScreen} />
+                <HomeStack.Screen name="StudyMetrialView" component={StudyMetrialView} />
               </HomeStack.Navigator>
             )}
           </Tab.Screen>
@@ -454,6 +458,21 @@ function App() {
                   <Text style={externalStyles.drawerItemText}>Performance wise Results</Text>
                 </View>
               </Pressable>
+
+              <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("Home", {
+                screen: 'LeaderBoardScreen',
+                params: {
+                  screen: 'StudyBankScreen'
+                }
+              })}>
+                <View style={externalStyles.drawerItemSubContainer}>
+                  <View style={{}}>
+                    <Image source={images.study_document}
+                      style={externalStyles.drawerItemIcon} resizeMode="contain" />
+                  </View>
+                  <Text style={externalStyles.drawerItemText}>Study Bank</Text>
+                </View>
+              </Pressable>
               {/* <Pressable style={externalStyles.drawerItemContainer} onPress={() => props.navigation.navigate("MyProfileScreen")}>
                 <View style={externalStyles.drawerItemSubContainer}>
                   <View style={{}}>
@@ -515,7 +534,7 @@ function App() {
           <Stack.Screen name="HomeScreen" component={MyDrawer} />
           <Stack.Screen name="QuizScreen" component={QuizScreen} />
           {/* <Stack.Screen name="MyProfileScreen" component={MyProfileScreen} /> */}
-          {/* <Stack.Screen name="QuizScreen" component={QuizScreen2} /> */}
+          <Stack.Screen name="QuizScreen2" component={QuizScreen2} />
           <Stack.Screen name="FeedbackFormScreen" component={FeedbackFormScreen} />
           <Stack.Screen name="QuizResultScreen" component={QuizResultScreen} />
           <Stack.Screen name="CommonWeb" component={CommonWeb} />

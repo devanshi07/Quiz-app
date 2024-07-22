@@ -9,6 +9,7 @@ import { ACTIVE_QUIZ, LOGIN, SLIDER_DETAILS, SLIDER_LIST, TOP_WINNERS, TOP_WINNE
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
+import * as Animatable from 'react-native-animatable'
 
 export default function ConsistResultsScreen({ navigation }) {
 
@@ -92,7 +93,10 @@ export default function ConsistResultsScreen({ navigation }) {
             {activeTaluka == item.city ?
                 <>
                     {item.top_winners.map((item1) => (
-                        <View style={{ flexDirection: "row", backgroundColor: colors.themeYellowColor, height: 70, borderRadius: 20, justifyContent: "center", marginVertical: 5 }}>
+                        <Animatable.View
+                            animation={'slideInRight'}
+                            duration={1000}
+                            delay={index * 300} style={{ flexDirection: "row", backgroundColor: colors.themeYellowColor, height: 70, borderRadius: 20, justifyContent: "center", marginVertical: 5 }}>
                             <View style={{ flex: 0.3, padding: 10, borderRightColor: colors.white, borderRightWidth: 5, borderTopRightRadius: 100, borderBottomRightRadius: 100, justifyContent: "center", alignItems: "center" }}>
                                 <Image source={{ uri: item1.avatar }} style={{ width: SH(60), height: SH(60), borderRadius: 360 }} />
                             </View>
@@ -104,7 +108,7 @@ export default function ConsistResultsScreen({ navigation }) {
                                     <Text style={{ fontFamily: getSemiBoldFont(), fontSize: SF(20), color: colors.themeYellowColor }}>{item1.rank}</Text>
                                 </View>
                             </View>
-                        </View>
+                        </Animatable.View>
                     ))}
                 </>
                 : null}

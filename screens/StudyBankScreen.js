@@ -5,16 +5,16 @@ import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopRegularFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, LOGIN, PERSONAL_RESULT, SLIDER_DETAILS, SLIDER_LIST, TOP_WINNERS } from "../common/webUtils";
+import { ACTIVE_QUIZ, LOGIN, PERSONAL_RESULT, SLIDER_DETAILS, SLIDER_LIST, STUDY_BANK, TOP_WINNERS } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
 import * as Animatable from 'react-native-animatable'
 
-export default function MyResultsScreen({ navigation }) {
+export default function StudyBankScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
-    const [resultList, setResultList] = useState([]);
+    const [studyList, setStudyList] = useState([]);
     const focused = useIsFocused();
     let Flatlistref = useRef(null);
 
@@ -26,9 +26,10 @@ export default function MyResultsScreen({ navigation }) {
 
     // result list api
     const getMyResultsList = async () => {
-
         try {
             setLoading(true);
+            const designation_id = await getSession(DESIGNATION_ID);
+
             const token = await getSession(TOKEN);
             const myHeaders = new Headers();
             myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
@@ -39,14 +40,16 @@ export default function MyResultsScreen({ navigation }) {
                 redirect: "follow"
             };
 
-            fetch(PERSONAL_RESULT, requestOptions)
+            CustomConsole(STUDY_BANK + designation_id);
+
+            fetch(STUDY_BANK + designation_id, requestOptions)
                 .then((response) => response.json())
                 .then((json) => {
                     CustomConsole(json);
 
                     if (json.status == 1) {
                         // success response
-                        setResultList(json.data);
+                        setStudyList(json.top_winners);
                         setLoading(false);
                     }
                     else {
@@ -57,26 +60,36 @@ export default function MyResultsScreen({ navigation }) {
                 })
                 .catch((error) => {
                     setLoading(false);
-                    CustomConsole("Top performer list Api Error: " + error);
+                    CustomConsole("Study bank list Api Error: " + error);
                 });
         } catch (error) {
             setLoading(false);
-            CustomConsole("Top performer List Api Exception: " + error);
+            CustomConsole("Study bank List Api Exception: " + error);
         }
     }
 
     // result item view
     const renderResultItem = ({ item, index }) => (
         <Animatable.View
-            animation={'fadeIn'}
+            animation={'slideInRight'}
             duration={1000}
-            delay={index * 300} style={{
-                 borderWidth: 1, borderColor: "white", borderRadius: 14, padding: 7
+            delay={index * 300}
+            style={{
+                borderWidth: 1, borderColor: "white", borderRadius: 14, backgroundColor: "#f0f0f0", flexDirection: "row",
             }}>
-            <Text style={{ color: colors.white, fontFamily: getPopBoldFont(), fontSize: SF(20) }}>{item.quiz_name}</Text>
-            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16) }}>Correct Answers: {item.correct_answers}</Text>
-            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16) }}>Wrong Answers: {item.wrong_answers}</Text>
-            <Text style={{ color: colors.white, fontFamily: getPopRegularFont(), fontSize: SF(16) }}>Total time: {item.total_time}</Text>
+            <View style={{ paddingLeft: 7, paddingVertical: 7 }}>
+                <View style={{ backgroundColor: colors.themeYellowColor, borderRadius: 10, alignItems: "center", justifyContent: "center", height: SH(65), width: SH(65) }}>
+                    <Image source={item.pdf != null && item.pdf != "" ? images.document_file : images.video_image} style={{ height: SH(45), width: SH(45), resizeMode: "contain", tintColor: colors.white }} />
+                </View>
+            </View>
+            <View style={{ flex: 1, marginLeft: SH(15), paddingVertical: 7 }}>
+                <Text style={{ color: colors.black, fontFamily: getPopBoldFont(), fontSize: SF(18) }}>{item.title}</Text>
+                <Text style={{ color: colors.grey, fontFamily: getPopRegularFont(), fontSize: SF(15) }}>{item.description}</Text>
+            </View>
+            <Pressable onPress={() => navigation.navigate("StudyMetrialView", { paramItem: item })}
+                style={{ backgroundColor: "#e8e8e8", borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingHorizontal: SW(20), justifyContent: "center", alignItems: "center" }}>
+                <Image source={images.right_arrow} style={{ height: SH(20), width: SH(20), resizeMode: "contain", }} />
+            </Pressable>
         </Animatable.View>
     );
 
@@ -88,19 +101,19 @@ export default function MyResultsScreen({ navigation }) {
                 <Pressable style={{ padding: 10 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
                     <Image source={images.drawer_menu} style={{ height: SH(40), width: SH(40), resizeMode: "contain", tintColor: colors.black }} />
                 </Pressable>
-                <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"My Results"}</Text>
+                <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Study Bank"}</Text>
             </View>
             {/* end of header view */}
 
             {loading ? progressView(loading) :
                 <FlatList
-                    data={resultList}
+                    data={studyList}
                     style={{
-                        marginTop: SH(55), marginBottom: SH(30), backgroundColor: colors.themeYellowColor, marginHorizontal: SW(37), borderRadius: 40, paddingHorizontal: SW(32),
+                        marginTop: SH(40), marginBottom: SH(30), marginHorizontal: SW(37),
                     }}
-                    ListHeaderComponent={() => <View style={{ alignSelf: "center", marginTop: SH(34), marginBottom: SH(67) }}>
-                        <Text style={{ color: colors.white, fontSize: SF(23), fontFamily: getSemiBoldFont() }}>{"Quiz's Results"}</Text>
-                    </View>}
+                    // ListHeaderComponent={() => <View style={{ alignSelf: "center", marginTop: SH(34), marginBottom: SH(67) }}>
+                    //     <Text style={{ color: colors.white, fontSize: SF(23), fontFamily: getSemiBoldFont() }}>{"Quiz's Results"}</Text>
+                    // </View>}
                     ItemSeparatorComponent={() => (<View style={{ height: SH(22) }} />)}
                     ListFooterComponent={() => (<View style={{ height: SH(20) }} />)}
                     showsVerticalScrollIndicator={false}
