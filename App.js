@@ -251,6 +251,7 @@ function App() {
           <Tab.Screen name="LeaderBoardScreen"
             // component={LeaderBoardScreen}
             options={{
+              unmountOnBlur: true,
               tabBarIcon: ({ color }) => <Image source={images.bottom_tab_home} style={externalStyles.topTabsBarIcon} />,
             }}>
             {() => (

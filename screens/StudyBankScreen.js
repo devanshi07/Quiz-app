@@ -1,5 +1,5 @@
 import { DrawerActions, useIsFocused, useNavigation } from "@react-navigation/native";
-import { Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Dimensions, FlatList, Image, ImageBackground, Linking, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { externalStyles } from "../common/styles";
 import images from "../assets/images";
 import { colors } from "../common/color";
@@ -79,14 +79,24 @@ export default function StudyBankScreen({ navigation }) {
             }}>
             <View style={{ paddingLeft: 7, paddingVertical: 7 }}>
                 <View style={{ backgroundColor: colors.themeYellowColor, borderRadius: 10, alignItems: "center", justifyContent: "center", height: SH(65), width: SH(65) }}>
-                    <Image source={item.pdf != null && item.pdf != "" ? images.document_file : images.video_image} style={{ height: SH(45), width: SH(45), resizeMode: "contain", tintColor: colors.white }} />
+                    <Image source={images.document_file} style={{ height: SH(45), width: SH(45), resizeMode: "contain", tintColor: colors.white }} />
                 </View>
             </View>
             <View style={{ flex: 1, marginLeft: SH(15), paddingVertical: 7 }}>
                 <Text style={{ color: colors.black, fontFamily: getPopBoldFont(), fontSize: SF(18) }}>{item.title}</Text>
                 <Text style={{ color: colors.grey, fontFamily: getPopRegularFont(), fontSize: SF(15) }}>{item.description}</Text>
             </View>
-            <Pressable onPress={() => navigation.navigate("StudyMetrialView", { paramItem: item })}
+            <Pressable onPress={() => {
+                navigation.navigate("StudyMetrialView", { paramItem: item })
+                // if (item.pdf_url != null && item.pdf_url != "") {
+                //     Linking.openURL(item.pdf_url);
+                // } else {
+                //     if (item.video_link !== null) {
+                //     }else{
+                //         Alert.alert(APP_NAME,"Video is not available.")
+                //     }
+                // }
+            }}
                 style={{ backgroundColor: "#e8e8e8", borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingHorizontal: SW(20), justifyContent: "center", alignItems: "center" }}>
                 <Image source={images.right_arrow} style={{ height: SH(20), width: SH(20), resizeMode: "contain", }} />
             </Pressable>
@@ -111,6 +121,8 @@ export default function StudyBankScreen({ navigation }) {
                     style={{
                         marginTop: SH(40), marginBottom: SH(30), marginHorizontal: SW(37),
                     }}
+                    // refreshing={loading}
+                    // onRefresh={getMyResultsList}
                     // ListHeaderComponent={() => <View style={{ alignSelf: "center", marginTop: SH(34), marginBottom: SH(67) }}>
                     //     <Text style={{ color: colors.white, fontSize: SF(23), fontFamily: getSemiBoldFont() }}>{"Quiz's Results"}</Text>
                     // </View>}

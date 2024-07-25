@@ -13,6 +13,7 @@ import { APP_NAME } from "../common/string";
 import * as Progress from 'react-native-progress';
 import WebView from "react-native-webview";
 import * as Animatable from 'react-native-animatable'
+import Video from 'react-native-video';
 
 export default function QuizScreen({ navigation, route }) {
 
@@ -436,6 +437,16 @@ export default function QuizScreen({ navigation, route }) {
       video.pause();
     });
   `;
+
+    const getFileExtension = (url) => {
+        console.log("URL: "+ url);
+        const parts = url.split('.');
+        const fileExtension = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+
+        const videoExtensions = ['mp4', 'mov', 'avi', 'mkv', 'mpeg'];
+        return videoExtensions.includes(fileExtension);
+    };
+
     return (
         <View style={externalStyles.coloredContainer}>
 
@@ -517,15 +528,29 @@ export default function QuizScreen({ navigation, route }) {
                                     delay={300} style={{ borderWidth: 1, borderColor: colors.themeGreenColor, borderRadius: 11, paddingVertical: SH(15), paddingHorizontal: SW(21), marginTop: SH(-15) }}>
                                     <Text style={{ color: colors.questionText, fontFamily: getPopMediumFont(), fontSize: SF(15), textAlign: 'justify' }}>{questionList[currentQuestion]?.question_text}</Text>
                                 </Animatable.View>
-                                {questionList[currentQuestion]?.question_media != "" ?
-                                    <WebView
-                                        source={{ uri: questionList[currentQuestion]?.question_media }}
-                                        // source={{ uri: "https://www.computerhope.com/jargon/m/example.mp3" }}
-                                        style={{ height: 200, marginTop: 10 }}
-                                        mediaPlaybackRequiresUserAction={true}
-                                        allowsInlineMediaPlayback={false}
-                                        injectedJavaScript={injectedJavaScript}
-                                    />
+                                {questionList[currentQuestion]?.question_media != "" && questionList[currentQuestion]?.question_media != undefined && questionList[currentQuestion]?.question_media != null ?
+                                    getFileExtension(questionList[currentQuestion]?.question_media) ?
+                                        <Video
+                                            source={{ uri: questionList[currentQuestion]?.question_media }} // Replace with your video URL
+                                            style={{
+                                                width: '100%',
+                                                height: 200,
+                                                marginTop: 10
+                                            }}
+                                            controls={true}
+                                            paused={true}
+                                            resizeMode="contain"
+                                            onError={(error) => console.log('Video error:', error)}
+                                        />
+                                        :
+                                        <WebView
+                                            source={{ uri: questionList[currentQuestion]?.question_media }}
+                                            // source={{ uri: "https://www.computerhope.com/jargon/m/example.mp3" }}
+                                            style={{ height: 200, marginTop: 10 }}
+                                            mediaPlaybackRequiresUserAction={true}
+                                            allowsInlineMediaPlayback={false}
+                                            injectedJavaScript={injectedJavaScript}
+                                        />
                                     : null
                                 }
                                 {/* question */}

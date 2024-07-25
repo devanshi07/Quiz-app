@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, SafeAreaView, Pressable, Image, Text } from 'react-native';
+import { View, SafeAreaView, Pressable, Image, Text, ScrollView, Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { PRIVACY_POLICY } from '../common/string';
-import { getPopMediumFont, getRegularFont, progressView } from '../common/utils';
+import { getPopBoldFont, getPopMediumFont, getRegularFont, progressView } from '../common/utils';
 import { colors } from '../common/color';
 import { externalStyles } from '../common/styles';
 import images from '../assets/images';
@@ -24,14 +24,22 @@ function StudyMetrialView({ route, navigation }) {
       </View>
       {/* end of header view */}
 
-      {/* {isLoading ? progressView(isLoading) :  */}
-      <View style={externalStyles.container}>
-        <WebView
-          onLoad={() => setLoading(false)}
-          source={{ uri: paramItem?.pdf != "" && paramItem?.pdf != null ? paramItem?.pdf : paramItem?.video_link }}
-        />
-      </View>
-      {/* } */}
+      <ScrollView>
+        {paramItem?.video_link != null && paramItem?.video_link != "" ? <View style={externalStyles.container}>
+          <WebView style={{ height: 300 }}
+            onLoad={() => setLoading(false)}
+            source={{ uri: paramItem?.video_link }}
+          />
+        </View> : null}
+        <View style={{ marginHorizontal: SW(30), marginTop: SH(30) }}>
+          {/* <Text style={{ color: colors.black, fontSize: SF(20), fontFamily: getPopBoldFont() }}>{"Details"}</Text> */}
+          <Text style={{ color: colors.black, fontSize: SF(18), fontFamily: getPopMediumFont(), textAlign: "justify" }}>{paramItem?.description}</Text>
+        </View>
+      </ScrollView>
+      {paramItem?.pdf_url != "" && paramItem?.pdf_url != null ? <Pressable onPress={() => Linking.openURL(paramItem?.pdf_url)}
+        style={{ backgroundColor: colors.themeYellowColor, alignSelf: "flex-end", paddingHorizontal: SW(14), paddingVertical: SH(13), borderRadius: 360, marginTop: SH(54), marginRight: SW(20), marginBottom: SH(20) }}>
+        <Image source={images.document_file} style={{ height: SH(45), width: SH(45), resizeMode: "contain", tintColor: colors.white }} />
+      </Pressable> : null}
     </SafeAreaView>
   );
 }
