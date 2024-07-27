@@ -5,7 +5,7 @@ import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, getMediumFont, getPopBoldFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, GET_PROFILE, LOGIN, LOGOUT, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
+import { ACTIVE_QUIZ, DELETE_ACCOUNT, GET_PROFILE, LOGIN, LOGOUT, SLIDER_DETAILS, SLIDER_LIST } from "../common/webUtils";
 import { useEffect, useRef, useState } from "react";
 import { AVATAR, EMAIL, FCM_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, clearAsyncStorage, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
@@ -124,6 +124,56 @@ export default function MyProfileScreen({ navigation }) {
         ]);
     }
 
+    // delete function
+    const deleteFunction = async () => {
+        Alert.alert(APP_NAME, 'Are you sure you want to delete this account?', [
+            {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel',
+            },
+            {
+                text: 'YES', onPress: async () => {
+
+                    try {
+                        const token = await getSession(TOKEN);
+                        const user_id = await getSession(USER_ID);
+                        const myHeaders = new Headers();
+                        myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+
+                        const requestOptions = {
+                            method: "GET",
+                            headers: myHeaders,
+                            redirect: "follow"
+                        };
+
+                        CustomConsole(DELETE_ACCOUNT + user_id);
+
+                        setLoading(true);
+                        fetch(DELETE_ACCOUNT + user_id, requestOptions)
+                            .then((response) => response.json())
+                            .then((json) => {
+                                CustomConsole(json);
+                                clearAsyncStorage();
+                                navigation.navigate("LoginScreen");
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'LoginScreen' }],
+                                });
+                            })
+                            .catch((error1) => {
+                                setLoading(false);
+                                CustomConsole("Delete account Api Error: " + error1);
+                            });
+                    } catch (error) {
+                        setLoading(false);
+                        CustomConsole("Delete account Api Exception: " + error);
+                    }
+                }
+            },
+        ]);
+    }
+
     return (
         <View style={externalStyles.coloredContainer}>
 
@@ -141,10 +191,10 @@ export default function MyProfileScreen({ navigation }) {
                     <ScrollView>
                         <View style={{ marginHorizontal: SW(37) }}>
 
-                            {/* quiz section */}
+                            {/* profile section */}
                             <View style={{ borderRadius: 40, paddingHorizontal: SW(27), backgroundColor: colors.white, marginTop: SH(100), paddingBottom: SH(37) }}>
 
-                                {/* question no vew */}
+                                {/* profile photo vew */}
                                 <View style={{
                                     flex: 1,
                                     justifyContent: 'center',
@@ -171,14 +221,17 @@ export default function MyProfileScreen({ navigation }) {
                                     }, { borderTopLeftRadius: 45, borderTopRightRadius: 45, backgroundColor: colors.themeGreenColor, position: "absolute", top: -45 }]}>
                                     </View>
                                 </View>
-                                {/* end of question no view */}
+                                {/* end of profile photo view */}
 
+                                {/* update avatar button */}
                                 <Pressable onPress={() => navigation.navigate('AvatarUpdateScreen', { paramImage: avatar, paramName: user_name, paramMobile: user_phone })}
                                     style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(22), fontFamily: getPopSemiBoldFont() }}>{"Update Avatar"}</Text>
                                 </Pressable>
+                                {/* end of update avatar button */}
 
-                                <View style={{ marginTop: SH(84) }}>
+                                {/* profile details view */}
+                                <View style={{ marginTop: SH(64) }}>
 
                                     <View
                                         style={{
@@ -206,13 +259,18 @@ export default function MyProfileScreen({ navigation }) {
 
 
                                     <Pressable onPress={logoutFunction}
-                                        style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center", marginTop: SH(50) }}>
+                                        style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center", marginTop: SH(30) }}>
                                         <Text style={{ color: colors.white, fontSize: SF(22), fontFamily: getPopSemiBoldFont() }}>{"Logout"}</Text>
                                     </Pressable>
+                                    <Pressable onPress={deleteFunction}
+                                        style={{ backgroundColor: colors.themeColor, borderRadius: 11, paddingHorizontal: SW(13), paddingVertical: SH(7), alignSelf: "center", marginTop: SH(15) }}>
+                                        <Text style={{ color: colors.white, fontSize: SF(22), fontFamily: getPopSemiBoldFont() }}>{"Delete Account"}</Text>
+                                    </Pressable>
                                 </View>
+                                {/* end of profile details view */}
 
                             </View>
-                            {/* end of quiz section */}
+                            {/* end of profile section */}
 
                         </View>
                     </ScrollView>

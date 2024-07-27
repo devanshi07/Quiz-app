@@ -28,6 +28,8 @@ export const GET_PROFILE = BASE_URL + 'profile';
 export const PROFILE_EDIT = BASE_URL + 'profile/edit'; 
 export const AVATAR_LIST = BASE_URL + 'avatars'; 
 
+export const DELETE_ACCOUNT = BASE_URL + 'staff/'; 
+
 
 // Common api call for POST method
 export const postAPICall = async (api, formdata) => {
