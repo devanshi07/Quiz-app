@@ -39,6 +39,7 @@ export default function MyProfileScreen({ navigation }) {
             const myHeaders = new Headers();
             myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
+            
             const requestOptions = {
                 method: "GET",
                 headers: myHeaders,
