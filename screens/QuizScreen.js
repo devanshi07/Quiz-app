@@ -357,33 +357,33 @@ export default function QuizScreen({ navigation, route }) {
 
     const getOptionStyle = (index) => {
         if (!isAnswered) return styles.option;
-        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 0) return styles.wrongOption;
-        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOption;
+        if (index === selectedOption && questionList[currentQuestion]?.question_options[index]?.is_currect === 0) return styles.wrongOption;
+        if (index === selectedOption && questionList[currentQuestion]?.question_options[index]?.is_currect === 1) return styles.correctOption;
         // if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOption;
         return styles.option;
     };
 
     const getOptionTextStyle = (index) => {
         if (!isAnswered) return styles.optionText;
-        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 0) return styles.wrongOptionText;
-        if (index === selectedOption && questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOptionText;
+        if (index === selectedOption && questionList[currentQuestion]?.question_options[index]?.is_currect === 0) return styles.wrongOptionText;
+        if (index === selectedOption && questionList[currentQuestion]?.question_options[index]?.is_currect === 1) return styles.correctOptionText;
         // if (questionList[currentQuestion].question_options[index].is_currect === 1) return styles.correctOptionText;
         return styles.optionText;
     };
 
     const shouldShowExplanation = () => {
         if (!isAnswered) return false;
-        return questionList[currentQuestion].question_options[selectedOption].is_currect === 0;
+        return questionList[currentQuestion]?.question_options[selectedOption]?.is_currect === 0;
     };
 
     const getExplanation = () => {
         if (!isAnswered) return null;
-        if (questionList[currentQuestion].question_options[selectedOption].is_currect === 0) {
-            const correctOption = questionList[currentQuestion].question_options.find(option => option.is_currect === 1);
+        if (questionList[currentQuestion]?.question_options[selectedOption]?.is_currect === 0) {
+            const correctOption = questionList[currentQuestion]?.question_options?.find(option => option.is_currect === 1);
             return (
                 <View style={styles.explanationContainer}>
-                    <Text style={styles.correctAnswer}>Correct answer: {correctOption.option_text}</Text>
-                    <Text style={styles.explanation}>Explanation: {questionList[currentQuestion].answer_explained}</Text>
+                    <Text style={styles.correctAnswer}>Correct answer: {correctOption?.option_text}</Text>
+                    <Text style={styles.explanation}>Explanation: {questionList[currentQuestion]?.answer_explained}</Text>
                 </View>
             );
         }
