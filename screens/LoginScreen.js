@@ -133,6 +133,12 @@ export default function LoginScreen({ navigation }) {
                         </Pressable>
                         {/* end of submit button */}
 
+                        {/* login as guest button */}
+                        <Pressable onPress={() => navigation.navigate('LoginAsGuestScreen')} style={externalStyles.login_submitbutton}>
+                            <Text style={externalStyles.login_submitbuttonText}>Login as Guest</Text>
+                        </Pressable>
+                        {/* end of login as guest button */}
+
                     </View>
 
                 </ImageBackground>

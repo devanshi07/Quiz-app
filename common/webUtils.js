@@ -8,27 +8,32 @@ export const LOGOUT = BASE_URL + 'logout';
 
 export const SLIDER_LIST = BASE_URL + 'slider/home'; //after / add code which come from slider list
 
-export const ACTIVE_QUIZ = BASE_URL + 'quizzes/active'; 
-export const QUIZ_DETAILS = BASE_URL + 'quiz/details'; 
-export const QUIZ_SUBMIT = BASE_URL + 'quiz/submit'; 
-export const PERSONAL_RESULT = BASE_URL + 'quiz/personal-result'; 
+export const ACTIVE_QUIZ = BASE_URL + 'quizzes/active';
+export const QUIZ_DETAILS = BASE_URL + 'quiz/details';
+export const QUIZ_SUBMIT = BASE_URL + 'quiz/submit';
+export const PERSONAL_RESULT = BASE_URL + 'quiz/personal-result';
 export const TOP_WINNERS = BASE_URL + 'quiz/top-winners?designation_id=';
 
 export const ATTEND_QUIZ = BASE_URL + 'quiz/attendance';
 export const TOTAL_QUIZ_ATTENDANCE = BASE_URL + 'quiz/attendance?quiz_id=';
 
-export const TOP_WINNERS_PERFORMANCE = BASE_URL + 'quiz/top-winners-performance?designation_id='; 
-export const TOP_WINNERS_CONSISTENT = BASE_URL + 'quiz/top-winners-consistent-city'; 
+export const TOP_WINNERS_PERFORMANCE = BASE_URL + 'quiz/top-winners-performance?designation_id=';
+export const TOP_WINNERS_CONSISTENT = BASE_URL + 'quiz/top-winners-consistent-city';
 
-export const STUDY_BANK = BASE_URL + 'quiz/study-banks?designation_id='; 
+export const STUDY_BANK = BASE_URL + 'quiz/study-banks?designation_id=';
 
-export const FEEDBACK = BASE_URL + 'feedback'; 
+export const FEEDBACK = BASE_URL + 'feedback';
 
-export const GET_PROFILE = BASE_URL + 'profile'; 
-export const PROFILE_EDIT = BASE_URL + 'profile/edit'; 
-export const AVATAR_LIST = BASE_URL + 'avatars'; 
+export const GET_PROFILE = BASE_URL + 'profile';
+export const PROFILE_EDIT = BASE_URL + 'profile/edit';
+export const AVATAR_LIST = BASE_URL + 'avatars';
 
-export const DELETE_ACCOUNT = BASE_URL + 'staff/'; 
+export const DELETE_ACCOUNT = BASE_URL + 'staff/';
+
+export const TALUKA_LIST = BASE_URL + 'getTalukaList';
+export const LOGIN_AS_GUEST = BASE_URL + 'LoginasGuest';
+export const COMMON_QUIZ_LIST = BASE_URL + 'getCommonQuizzes';
+export const VILLAGE_LIST = BASE_URL + 'getVillageList?taluka_id=';
 
 
 // Common api call for POST method

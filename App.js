@@ -51,6 +51,9 @@ import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
 import StudyBankScreen from './screens/StudyBankScreen';
 import StudyMetrialView from './screens/StudyMetrialView';
+import LoginAsGuestScreen from './screens/LoginAsGuestScreen';
+import CommonQuizListScreen from './screens/CommonQuizListScreen';
+import CommonQuizScreen from './screens/CommonQuizScreen';
 
 // splash screen 
 function SplashScreen() {
@@ -532,6 +535,9 @@ function App() {
           initialRouteName='SplashScreen'>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="LoginAsGuestScreen" component={LoginAsGuestScreen} />
+          <Stack.Screen name="CommonQuizListScreen" component={CommonQuizListScreen} />
+          <Stack.Screen name="CommonQuizScreen" component={CommonQuizScreen} />
           <Stack.Screen name="HomeScreen" component={MyDrawer} />
           <Stack.Screen name="QuizScreen" component={QuizScreen} />
           {/* <Stack.Screen name="MyProfileScreen" component={MyProfileScreen} /> */}

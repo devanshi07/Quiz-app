@@ -138,7 +138,9 @@ export const externalStyles = StyleSheet.create({
     login_formTextinput: {
         marginBottom: 20, color: colors.black, fontSize: SF(18), fontFamily: getMediumFont(), borderRadius: 5, backgroundColor: colors.textInputColor
     },
-
+    login_as_guest_text: {
+        fontSize: 17, color: "black", fontFamily: getSemiBoldFont(), alignSelf: 'center'
+    },
     // home screen
     home_sliderMainView: {
         marginTop: 28

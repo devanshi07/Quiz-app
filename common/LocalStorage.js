@@ -38,3 +38,4 @@ export const ROLE = "role";
 export const FCM_TOKEN = "fcm_token";
 export const DESIGNATION = "designation";
 export const DESIGNATION_ID = "designation_id";
+export const GUEST_TOKEN = "guest_token";

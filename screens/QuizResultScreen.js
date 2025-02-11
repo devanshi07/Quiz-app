@@ -29,7 +29,11 @@ export default function QuizResultScreen({ navigation, route }) {
     }, [focused]);
 
     function handleBackButtonClick() {
-        navigation.navigate("HomeScreen")
+        if (route.params?.fromWhere == "commonquiz") {
+            navigation.navigate("LoginScreen");
+        } else {
+            navigation.navigate("HomeScreen")
+        }
         return true;
     }
 
@@ -45,7 +49,13 @@ export default function QuizResultScreen({ navigation, route }) {
 
             {/* header view */}
             <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: SW(12), marginTop: SH(28.87) }}>
-                <Pressable style={{ padding: 10 }} onPress={() => navigation.navigate("HomeScreen")}>
+                <Pressable style={{ padding: 10 }} onPress={() => {
+                    if (route.params?.fromWhere == "commonquiz") {
+                        navigation.navigate("LoginScreen");
+                    } else {
+                        navigation.navigate("HomeScreen");
+                    }
+                }}>
                     <Image source={images.back_arrow} style={{ height: SH(23), width: SH(23), resizeMode: "contain" }} />
                 </Pressable>
                 <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getPopMediumFont() }}>{"Quiz Results"}</Text>

@@ -33,5 +33,7 @@ const images = {
     download: require('./download.png'),
     video_image: require('./video_image.png'),
     right_arrow: require('./right_arrow.png'),
+    close: require('./close.png'),
+    check: require('./check.png'),
 };
 export default images;
