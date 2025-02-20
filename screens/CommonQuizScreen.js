@@ -5,9 +5,9 @@ import images from "../assets/images";
 import { colors } from "../common/color";
 import { TextInput } from "react-native-paper";
 import { CustomConsole, alertDialogDisplay, coloredProgressView, getMediumFont, getPopMediumFont, getPopSemiBoldFont, getSemiBoldFont, progressView } from "../common/utils";
-import { ACTIVE_QUIZ, LOGIN, QUIZ_DETAILS, QUIZ_SUBMIT, SLIDER_DETAILS, SLIDER_LIST, TOTAL_QUIZ_ATTENDANCE } from "../common/webUtils";
+import { ACTIVE_QUIZ, COMMON_QUIZ_SUBMIT, LOGIN, QUIZ_DETAILS, QUIZ_SUBMIT, SLIDER_DETAILS, SLIDER_LIST, TOTAL_QUIZ_ATTENDANCE } from "../common/webUtils";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AVATAR, EMAIL, FCM_TOKEN, GUEST_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
+import { AVATAR, EMAIL, FCM_TOKEN, GUEST_ID, GUEST_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { SF, SH, SW } from "../common/dimensions";
 import { APP_NAME } from "../common/string";
 import * as Progress from 'react-native-progress';
@@ -148,46 +148,46 @@ export default function CommonQuizScreen({ navigation, route }) {
     //     return () => clearInterval(interval); // Cleanup interval on component unmount
     // }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            let interval;
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         let interval;
 
-            const fetchData = async () => {
-                try {
-                    const token = await getSession(GUEST_TOKEN);
-                    const myHeaders = new Headers();
-                    myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+    //         const fetchData = async () => {
+    //             try {
+    //                 const token = await getSession(GUEST_TOKEN);
+    //                 const myHeaders = new Headers();
+    //                 // myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
-                    const requestOptions = {
-                        method: "GET",
-                        headers: myHeaders,
-                        redirect: "follow"
-                    };
+    //                 const requestOptions = {
+    //                     method: "GET",
+    //                     headers: myHeaders,
+    //                     redirect: "follow"
+    //                 };
 
-                    CustomConsole("interval called===>" + TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id);
-                    const response = await fetch(TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id, requestOptions);
-                    const result = await response.json();
-                    CustomConsole(result);
-                    // setTotalParticipants(prev => prev + 1); 
-                    if (result.status == 1) {
-                        setTotalParticipants(result.total_attendations);
-                    }
-                } catch (err) {
-                    setError(err);
-                }
-            };
+    //                 CustomConsole("interval called===>" + TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id);
+    //                 const response = await fetch(TOTAL_QUIZ_ATTENDANCE + paramItem?.quiz_id, requestOptions);
+    //                 const result = await response.json();
+    //                 CustomConsole(result);
+    //                 // setTotalParticipants(prev => prev + 1); 
+    //                 if (result.status == 1) {
+    //                     setTotalParticipants(result.total_attendations);
+    //                 }
+    //             } catch (err) {
+    //                 setError(err);
+    //             }
+    //         };
 
-            fetchData(); // Initial fetch
+    //         fetchData(); // Initial fetch
 
-            interval = setInterval(fetchData, 10000); // Fetch every 10 seconds
+    //         interval = setInterval(fetchData, 10000); // Fetch every 10 seconds
 
-            return () => {
-                if (interval) {
-                    clearInterval(interval); // Cleanup interval on screen blur
-                }
-            };
-        }, [paramItem])
-    );
+    //         return () => {
+    //             if (interval) {
+    //                 clearInterval(interval); // Cleanup interval on screen blur
+    //             }
+    //         };
+    //     }, [paramItem])
+    // );
 
     useEffect(() => {
         if (focused) {
@@ -200,18 +200,18 @@ export default function CommonQuizScreen({ navigation, route }) {
         try {
             setLoading(true);
 
-            const token = await getSession(GUEST_TOKEN);
+            // const token = await getSession(GUEST_TOKEN);
             const role = await getSession(ROLE);
 
             const myHeaders = new Headers();
-            myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+            // myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
             const formdata = new FormData();
             formdata.append("quiz_id", paramItem?.quiz_id);
 
             const requestOptions = {
                 method: "POST",
-                headers: myHeaders,
+                // headers: myHeaders,
                 body: formdata,
                 redirect: "follow"
             };
@@ -252,25 +252,27 @@ export default function CommonQuizScreen({ navigation, route }) {
     // submit quiz
     const submitQuiz = async () => {
         try {
-            const token = await getSession(GUEST_TOKEN);
+            // const token = await getSession(GUEST_TOKEN);
+            const staff_id = await getSession(GUEST_ID);
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-            myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
+            // myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
             let raw;
             if (answerArr.length == 0) {
                 raw = JSON.stringify({
                     "quiz_id": paramItem?.quiz_id,
                     "start_time": startTime,
-                    "end_time": formatTime(timeLeft)
-
+                    "end_time": formatTime(timeLeft),
+                    "staff_id": staff_id
                 });
             } else {
                 raw = JSON.stringify({
                     "quiz_id": paramItem?.quiz_id,
                     "start_time": startTime,
                     "end_time": formatTime(timeLeft),
-                    "answers": answerArr
+                    "answers": answerArr,
+                    "staff_id": staff_id
                 });
             }
 
@@ -281,10 +283,10 @@ export default function CommonQuizScreen({ navigation, route }) {
                 redirect: "follow"
             };
 
-            CustomConsole("API: " + QUIZ_SUBMIT);
+            CustomConsole("API: " + COMMON_QUIZ_SUBMIT);
             CustomConsole(raw);
             setLoading(true);
-            fetch(QUIZ_SUBMIT, requestOptions)
+            fetch(COMMON_QUIZ_SUBMIT, requestOptions)
                 .then((response) => response.json())
                 .then((json) => {
                     CustomConsole(json);
@@ -294,7 +296,7 @@ export default function CommonQuizScreen({ navigation, route }) {
                             paramTotalScore: 100,
                             paramAttemptQuestions: attemptQuestion,
                             paramScore: (correctAns * 100) / totalQuestions,
-                            fromWhere:"commonquiz"
+                            fromWhere: "commonquiz"
                         });
                     } else {
                         setLoading(false);
@@ -310,35 +312,6 @@ export default function CommonQuizScreen({ navigation, route }) {
             CustomConsole("Submit Quiz Api Exception: " + error);
         }
     }
-
-    // option pressed method
-    // const handleOptionPress = (selectedOption, question_id) => {
-    //     CustomConsole(selectedOption);
-    //     setSelectedOption(selectedOption.option_id);
-    //     if (selectedOption.is_currect === 1) {
-    //         setScore(score + 1);
-    //         setCorrectAns('1');
-    //         setAttemptQuestion(attemptQuestion + 1);
-    //         setProgress(((currentQuestion + 1) * 100) / totalQuestions);
-    //         answerArr.push({
-    //             "question_id": question_id,
-    //             "answer_id": selectedOption.option_id
-    //         });
-    //         setShowExplanation(false);
-
-    //     } else {
-    //         setCorrectAns('0');
-    //         setShowExplanation(true);
-    //         setAttemptQuestion(attemptQuestion + 1);
-    //         setProgress(((currentQuestion + 1) * 100) / totalQuestions);
-    //         answerArr.push({
-    //             "question_id": question_id,
-    //             "answer_id": selectedOption.option_id
-    //         });
-    //     }
-
-    //     handleNext();
-    // };
 
     const handleOptionPress = (index, selectedOption, question_id) => {
         if (!isAnswered) {
@@ -440,7 +413,7 @@ export default function CommonQuizScreen({ navigation, route }) {
   `;
 
     const getFileExtension = (url) => {
-        console.log("URL: "+ url);
+        console.log("URL: " + url);
         const parts = url.split('.');
         const fileExtension = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
 
@@ -472,14 +445,14 @@ export default function CommonQuizScreen({ navigation, route }) {
                             {/* end of progress bar view */}
 
                             {/* timer view */}
-                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                               {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14) }}>Participants</Text>
                                     <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>
                                         <Image source={images.fill_user} style={{ height: SH(20), width: SH(20), resizeMode: "contain" }} />
                                         <Text style={{ fontFamily: getPopMediumFont(), fontSize: SF(15), color: colors.black, marginLeft: 5, marginTop: 5 }}>{totalParticipants}</Text>
                                     </View>
-                                </View>
+                                </View> */}
                                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                                     <Text style={{ color: colors.white, fontSize: SF(18), fontFamily: getMediumFont(), marginRight: SW(14) }}>Timer</Text>
                                     <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.themeColor, backgroundColor: colors.timerBackground, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 7 }}>

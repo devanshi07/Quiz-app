@@ -82,41 +82,46 @@ export default function CommonQuizListScreen({ navigation, route }) {
 
             <Pressable onPress={async () => {
                 try {
-                    const token = await getSession(GUEST_TOKEN);
-                    const myHeaders = new Headers();
-                    myHeaders.append("Content-Type", "application/json");
-                    myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
-                    const raw = JSON.stringify({
-                        "quiz_id": item.quiz_id
+                    navigation.navigate("CommonQuizScreen", {
+                        paramItem: item,
                     });
 
-                    const requestOptions = {
-                        method: "POST",
-                        headers: myHeaders,
-                        body: raw,
-                        redirect: "follow"
-                    };
+                    // const token = await getSession(GUEST_TOKEN);
+                    // const myHeaders = new Headers();
+                    // myHeaders.append("Content-Type", "application/json");
+                    // myHeaders.append("Authorization", "Bearer " + token.split('|')[1].trim());
 
-                    CustomConsole("API: " + ATTEND_QUIZ);
-                    CustomConsole(raw);
-                    setLoading(true);
-                    fetch(ATTEND_QUIZ, requestOptions)
-                        .then((response) => response.json())
-                        .then((json) => {
-                            CustomConsole(json);
-                            if (json.status == 1) {
-                                navigation.navigate("CommonQuizScreen", {
-                                    paramItem: item,
-                                });
-                            } else {
-                                setLoading(false);
-                            }
-                        })
-                        .catch((error1) => {
-                            setLoading(false);
-                            CustomConsole("Quiz Attendance Api Error: " + error1);
-                        });
+                    // const raw = JSON.stringify({
+                    //     "quiz_id": item.quiz_id
+                    // });
+
+                    // const requestOptions = {
+                    //     method: "POST",
+                    //     headers: myHeaders,
+                    //     body: raw,
+                    //     redirect: "follow"
+                    // };
+
+                    // CustomConsole("API: " + ATTEND_QUIZ);
+                    // CustomConsole(raw);
+                    // setLoading(true);
+                    // fetch(ATTEND_QUIZ, requestOptions)
+                    //     .then((response) => response.json())
+                    //     .then((json) => {
+                    //         CustomConsole(json);
+                    //         if (json.status == 1) {
+                    //             navigation.navigate("CommonQuizScreen", {
+                    //                 paramItem: item,
+                    //             });
+                    //         } else {
+                    //             setLoading(false);
+                    //         }
+                    //     })
+                    //     .catch((error1) => {
+                    //         setLoading(false);
+                    //         CustomConsole("Quiz Attendance Api Error: " + error1);
+                    //     });
 
                 } catch (error) {
                     setLoading(false);

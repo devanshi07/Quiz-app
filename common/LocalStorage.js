@@ -39,3 +39,4 @@ export const FCM_TOKEN = "fcm_token";
 export const DESIGNATION = "designation";
 export const DESIGNATION_ID = "designation_id";
 export const GUEST_TOKEN = "guest_token";
+export const GUEST_ID = "guest_id";

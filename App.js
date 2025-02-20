@@ -54,9 +54,27 @@ import StudyMetrialView from './screens/StudyMetrialView';
 import LoginAsGuestScreen from './screens/LoginAsGuestScreen';
 import CommonQuizListScreen from './screens/CommonQuizListScreen';
 import CommonQuizScreen from './screens/CommonQuizScreen';
+import { createTables } from './LocalDb/database';
+import { insertTalukasAndVillages } from './LocalDb/databaseOperations';
+
+
+const fetchAPIData = async () => {
+  try {
+    const response = await fetch('https://yuvapahel.com/api/getAllTalukaVillageList');
+    const jsonResponse = await response.json();
+    await insertTalukasAndVillages(jsonResponse);
+  } catch (error) {
+    console.error('API fetch error:', error);
+  }
+};
 
 // splash screen 
 function SplashScreen() {
+
+  useEffect(() => {
+    createTables();
+    fetchAPIData();
+  }, []);
 
   const navigation = useNavigation();
   var isCall = true;

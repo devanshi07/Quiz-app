@@ -33,6 +33,7 @@ export const DELETE_ACCOUNT = BASE_URL + 'staff/';
 export const TALUKA_LIST = BASE_URL + 'getTalukaList';
 export const LOGIN_AS_GUEST = BASE_URL + 'LoginasGuest';
 export const COMMON_QUIZ_LIST = BASE_URL + 'getCommonQuizzes';
+export const COMMON_QUIZ_SUBMIT = BASE_URL + 'quiz/submitstudent';
 export const VILLAGE_LIST = BASE_URL + 'getVillageList?taluka_id=';
 
 

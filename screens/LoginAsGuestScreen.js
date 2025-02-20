@@ -6,10 +6,11 @@ import { colors } from "../common/color";
 import { CustomConsole, alertDialogDisplay, getBoldFont, getMediumFont, getRegularFont, getSemiBoldFont, progressView } from "../common/utils";
 import { LOGIN, LOGIN_AS_GUEST, TALUKA_LIST, VILLAGE_LIST } from "../common/webUtils";
 import { useEffect, useState } from "react";
-import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, GUEST_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
+import { AVATAR, DESIGNATION, DESIGNATION_ID, EMAIL, FCM_TOKEN, GUEST_ID, GUEST_TOKEN, PHONE, ROLE, TOKEN, USER_ID, USER_NAME, getSession, saveSession } from "../common/LocalStorage";
 import { APP_NAME } from "../common/string";
 import { RadioButton } from 'react-native-paper';
 import { SF, SH } from "../common/dimensions";
+import db from "../LocalDb/database";
 
 export default function LoginAsGuestScreen({ navigation }) {
 
@@ -25,6 +26,8 @@ export default function LoginAsGuestScreen({ navigation }) {
     const [age, setAge] = useState("");
     const [talukaModal, setTalukaModal] = useState(false);
     const [modalType, setModalType] = useState('');
+    const [searchVillage, setSearchVillage] = useState("");
+    const [copyVillageList, setCopyVillageList] = useState([]);
     const focused = useIsFocused();
 
     const showTypeModal = (text) => {
@@ -41,41 +44,61 @@ export default function LoginAsGuestScreen({ navigation }) {
     const getTalukaList = async () => {
 
         try {
-            setLoading(true);
-            const requestOptions = {
-                method: "GET",
-                redirect: "follow"
-            };
-            CustomConsole(TALUKA_LIST)
-            fetch(TALUKA_LIST, requestOptions)
-                .then((response) => response.json())
-                .then((json) => {
-                    CustomConsole("json==>");
-                    CustomConsole(json);
+            // setLoading(true);
+            // const requestOptions = {
+            //     method: "GET",
+            //     redirect: "follow"
+            // };
+            // CustomConsole(TALUKA_LIST)
+            // fetch(TALUKA_LIST, requestOptions)
+            //     .then((response) => response.json())
+            //     .then((json) => {
+            //         CustomConsole("json==>");
+            //         CustomConsole(json);
 
-                    // if (json.status == 1) {
-                    // success response
-                    talukaList.length = 0;
-                    for (var i = 0; i < json.cities.length; i++) {
-                        talukaList.push({
-                            name: json.cities[i].name,
-                            id: json.cities[i].id
-                        });
-                    }
-                    setTalukaList(talukaList);
-                    CustomConsole("Talukalist" + talukaList)
-                    setLoading(false);
-                    // }
-                    // else {
-                    //     // other reponse status
-                    //     setLoading(false);
-                    // }
+            //         // if (json.status == 1) {
+            //         // success response
+            //         talukaList.length = 0;
+            //         for (var i = 0; i < json.cities.length; i++) {
+            //             talukaList.push({
+            //                 name: json.cities[i].name,
+            //                 id: json.cities[i].id
+            //             });
+            //         }
+            //         setTalukaList(talukaList);
+            //         CustomConsole("Talukalist" + talukaList)
+            //         setLoading(false);
+            //         // }
+            //         // else {
+            //         //     // other reponse status
+            //         //     setLoading(false);
+            //         // }
 
-                })
-                .catch((error) => {
-                    setLoading(false);
-                    CustomConsole("Taluka list Api Error: " + error);
-                });
+            //     })
+            //     .catch((error) => {
+            //         setLoading(false);
+            //         CustomConsole("Taluka list Api Error: " + error);
+            //     });
+
+            db.transaction(tx => {
+                tx.executeSql(
+                    'SELECT * FROM talukas',
+                    [],
+                    (_, { rows }) => {
+                        // console.log("talukas", rows.raw()[0]);
+                        talukaList.length = 0;
+                        for (var i = 0; i < rows.raw().length; i++) {
+                            talukaList.push({
+                                name: rows.raw()[i].taluka_name,
+                                id: rows.raw()[i].taluka_id
+                            });
+                        }
+                        setTalukaList(talukaList);
+                    },
+                    error => console.error('Fetch Talukas Error:', error)
+                );
+            });
+
         } catch (error) {
             setLoading(false);
             CustomConsole("Ttaluka List Api Exception: " + error);
@@ -86,39 +109,68 @@ export default function LoginAsGuestScreen({ navigation }) {
     const getVillageList = async (talukaId) => {
 
         try {
-            const requestOptions = {
-                method: "GET",
-                redirect: "follow"
-            };
-            CustomConsole(VILLAGE_LIST + talukaId)
-            fetch(VILLAGE_LIST + talukaId, requestOptions)
-                .then((response) => response.json())
-                .then((json) => {
-                    CustomConsole("json==>");
-                    CustomConsole(json);
+            // const requestOptions = {
+            //     method: "GET",
+            //     redirect: "follow"
+            // };
+            // setLoading(true);
+            // CustomConsole(VILLAGE_LIST + talukaId)
+            // fetch(VILLAGE_LIST + talukaId, requestOptions)
+            //     .then((response) => response.json())
+            //     .then((json) => {
+            //         CustomConsole("json==>");
+            //         CustomConsole(json);
 
-                    // if (json.status == 1) {
-                    // success response
-                    villageList.length = 0;
-                    for (var i = 0; i < json.villages.length; i++) {
-                        villageList.push({
-                            name: json.villages[i].village_name,
-                            id: json.villages[i].id
-                        });
-                    }
-                    setVillageList(villageList);
-                    CustomConsole("VillageList" + villageList)
-                    // }
-                    // else {
-                    //     // other reponse status
-                    //     setLoading(false);
-                    // }
+            //         // if (json.status == 1) {
+            //         // success response
+            //         villageList.length = 0;
+            //         copyVillageList.length = 0;
+            //         for (var i = 0; i < json.villages.length; i++) {
+            //             villageList.push({
+            //                 name: json.villages[i].village_name,
+            //                 id: json.villages[i].id
+            //             });
+            //         }
+            //         setVillageList(villageList);
+            //         setCopyVillageList(villageList);
+            //         CustomConsole("VillageList" + villageList)
+            //         setLoading(false);
+            //         // }
+            //         // else {
+            //         //     // other reponse status
+            //         //     setLoading(false);
+            //         // }
 
-                })
-                .catch((error) => {
-                    CustomConsole("Village list Api Error: " + error);
-                });
+            //     })
+            //     .catch((error) => {
+            //         setLoading(false);
+            //         CustomConsole("Village list Api Error: " + error);
+            //     });
+
+            db.transaction(tx => {
+                tx.executeSql(
+                    'SELECT * FROM villages WHERE city_id = ?',
+                    [talukaId],
+                    (_, { rows }) => {
+                        // console.log("villages", rows.raw()[0]);
+                        villageList.length = 0;
+                        copyVillageList.length = 0;
+                        for (var i = 0; i < rows.raw().length; i++) {
+                            villageList.push({
+                                name: rows.raw()[i].village_name,
+                                id: rows.raw()[i].id
+                            });
+                        }
+                        setVillageList(villageList);
+                        setCopyVillageList(villageList);
+                        // console.log(villageList);
+                    },
+                    error => console.error('Fetch Villages Error:', error)
+                );
+            });
+
         } catch (error) {
+            setLoading(false);
             CustomConsole("Village List Api Exception: " + error);
         }
     }
@@ -180,43 +232,46 @@ export default function LoginAsGuestScreen({ navigation }) {
                         //     routes: [{ name: 'HomeScreen' }]
                         // });
                         if (json.staff) {
-                            const fcm_token = await getSession(FCM_TOKEN);
-                            const formdata = new FormData();
-                            formdata.append("unique_id", json.staff.unique_id);
-                            formdata.append("password", '123456');
-                            formdata.append("fcm_token", fcm_token);
+                            saveSession(GUEST_ID, json.staff.id.toString());
+                            navigation.navigate("CommonQuizListScreen", { paramItem: json.staff });
+                            setLoading(false);
 
-                            const requestOptions = {
-                                method: "POST",
-                                body: formdata,
-                                redirect: "follow"
-                            };
+                            // const fcm_token = await getSession(FCM_TOKEN);
+                            // const formdata = new FormData();
+                            // formdata.append("unique_id", json.staff.unique_id);
+                            // formdata.append("password", '123456');
+                            // formdata.append("fcm_token", fcm_token);
 
-                            CustomConsole(LOGIN + "\n");
-                            CustomConsole(formdata);
+                            // const requestOptions = {
+                            //     method: "POST",
+                            //     body: formdata,
+                            //     redirect: "follow"
+                            // };
 
-                            fetch(LOGIN, requestOptions)
-                                .then((response_login) => response_login.json())
-                                .then((json_login) => {
-                                    CustomConsole(json_login);
+                            // CustomConsole(LOGIN + "\n");
+                            // CustomConsole(formdata);
 
-                                    if (json_login.status == 1) {
-                                        // success response
-                                        saveSession(GUEST_TOKEN, json_login.data.token);
-                                        navigation.navigate("CommonQuizListScreen", { paramItem: json.staff });
-                                        setLoading(false);
+                            // fetch(LOGIN, requestOptions)
+                            //     .then((response_login) => response_login.json())
+                            //     .then((json_login) => {
+                            //         CustomConsole(json_login);
 
-                                    }
-                                    else {
-                                        // other reponse status
-                                        setLoading(false);
-                                    }
+                            //         if (json_login.status == 1) {
+                            //             // success response
+                            //             // saveSession(GUEST_TOKEN, json.staff.id);
 
-                                })
-                                .catch((error) => {
-                                    setLoading(false);
-                                    CustomConsole("Login Api Error: " + error);
-                                });
+
+                            //         }
+                            //         else {
+                            //             // other reponse status
+                            //             setLoading(false);
+                            //         }
+
+                            //     })
+                            //     .catch((error) => {
+                            //         setLoading(false);
+                            //         CustomConsole("Login Api Error: " + error);
+                            //     });
 
                         }
                         // }
@@ -270,7 +325,7 @@ export default function LoginAsGuestScreen({ navigation }) {
                                     color: colors.black, fontSize: SF(18), fontFamily: getMediumFont(), textAlignVertical: "center",
                                 }}>{taluka == "" || taluka == null ? "Taluka" : taluka}</Text>
                             </View>
-                            {taluka !== "" && taluka !== null ? <Pressable onPress={() => { setTaluka(null); setVillageList([]); setVillage(''); setVillageId(''); }} style={{ paddingHorizontal: 5, paddingVertical: 5, marginRight: 5 }}>
+                            {taluka !== "" && taluka !== null ? <Pressable onPress={() => { setTaluka(null); setVillageList([]); setCopyVillageList([]); setVillage(''); setVillageId(''); }} style={{ paddingHorizontal: 5, paddingVertical: 5, marginRight: 5 }}>
                                 <Image source={images.close} style={{
                                     width: SH(13), height: SH(13), resizeMode: "contain", tintColor: colors.themeColor
                                 }} />
@@ -400,10 +455,17 @@ export default function LoginAsGuestScreen({ navigation }) {
                                                 if (taluka == item.name) {
                                                     setTaluka('');
                                                     setTalukaId('');
+                                                    setVillage('');
+                                                    setVillageId('');
+                                                    setSearchVillage('');
                                                     setVillageList([]);
+                                                    setCopyVillageList([]);
                                                 } else {
                                                     setTaluka(item.name);
                                                     setTalukaId(item.id);
+                                                    setVillage('');
+                                                    setVillageId('');
+                                                    setSearchVillage('');
                                                     getVillageList(item.id);
                                                     setTalukaModal(false);
                                                 }
@@ -415,27 +477,58 @@ export default function LoginAsGuestScreen({ navigation }) {
                                         </Pressable>
                                     )} />
                                 :
-                                <FlatList data={villageList} style={{ marginTop: 10 }}
-                                    ItemSeparatorComponent={<View style={{ borderBottomWidth: 1, borderBottomColor: colors.borderColor, marginHorizontal: 10 }} />}
-                                    renderItem={({ item }) => (
+                                <>
+                                    <TextInput
+                                        style={{
+                                            marginTop: 20, color: colors.black, fontSize: SF(18), fontFamily: getMediumFont(), borderRadius: 5, borderWidth: 1, borderColor: colors.borderColor, marginHorizontal: SH(12), paddingVertical: SH(10)
+                                        }}
+                                        value={searchVillage}
+                                        onChangeText={txt => {
+                                            setSearchVillage(txt);
+                                            if (txt == "") {
+                                                setVillageList(copyVillageList);
+                                            } else {
+                                                const filtered = copyVillageList.filter((item) =>
+                                                    item.name.toLowerCase().includes(txt.toLowerCase())
+                                                );
+                                                setVillageList(filtered);
+                                            }
+                                        }}
+                                        placeholderTextColor={colors.grey}
+                                        placeholder="Search"
+                                        theme={{
+                                            colors: {
+                                                primary: colors.textInputColor,
+                                                secondary: colors.textInputColor,
+                                            },
+                                        }} />
 
-                                        <Pressable
-                                            onPress={() => {
-                                                if (village == item.name) {
-                                                    setVillage('');
-                                                    setVillageId('');
-                                                } else {
-                                                    setVillage(item.name);
-                                                    setVillageId(item.id);
-                                                    setTalukaModal(false);
-                                                }
-                                            }}
-                                            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, paddingHorizontal: 15, }}>
-                                            <Text style={{ textAlign: 'left', fontSize: SF(15), color: colors.black, textTransform: "uppercase", fontFamily: getRegularFont(), }}>{item.name}</Text>
-                                            {village == item.name ? <Image source={images.check} style={{ width: SH(20), height: SH(20), resizeMode: "contain", tintColor: colors.themeColor }} />
-                                                : null}
-                                        </Pressable>
-                                    )} />
+                                    <FlatList data={villageList} style={{ marginTop: 10 }}
+                                        ItemSeparatorComponent={<View style={{ borderBottomWidth: 1, borderBottomColor: colors.borderColor, marginHorizontal: 10 }} />}
+                                        renderItem={({ item }) => (
+
+                                            <Pressable
+                                                onPress={() => {
+                                                    if (village == item.name) {
+                                                        setVillage('');
+                                                        setVillageId('');
+                                                        setSearchVillage('');
+                                                        setVillageList(copyVillageList);
+                                                    } else {
+                                                        setVillage(item.name);
+                                                        setVillageId(item.id);
+                                                        setSearchVillage('');
+                                                        setTalukaModal(false);
+                                                        setVillageList(copyVillageList);
+                                                    }
+                                                }}
+                                                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, paddingHorizontal: 15, }}>
+                                                <Text style={{ textAlign: 'left', fontSize: SF(15), color: colors.black, textTransform: "uppercase", fontFamily: getRegularFont(), }}>{item.name}</Text>
+                                                {village == item.name ? <Image source={images.check} style={{ width: SH(20), height: SH(20), resizeMode: "contain", tintColor: colors.themeColor }} />
+                                                    : null}
+                                            </Pressable>
+                                        )} />
+                                </>
                             }
                         </View>
                         {/* end of data view */}
